@@ -74,6 +74,7 @@ const sendOtp = async (req, res) => {
 
 
 
+
 const verifyOtp = async (req, res) => {
 
     try {
@@ -111,6 +112,12 @@ const verifyOtp = async (req, res) => {
 
 
 
+        existingOtp.isVerified = true;
+
+        await existingOtp.save();
+
+
+
         return res.status(200).json({
             success: true,
             message: "OTP verified successfully",
@@ -138,20 +145,43 @@ const registerUser = async (req, res) => {
 
         const { name, email, password, role } = req.body;
 
-        
+
+
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
+
             return res.status(400).json({
                 success: false,
                 message: "User already exists",
             });
+
         }
 
-        
+
+
+        const verifiedOtp = await Otp.findOne({
+            email,
+            isVerified: true,
+        });
+
+
+
+        if (!verifiedOtp) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Please verify OTP first",
+            });
+
+        }
+
+
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        
+
+
         const user = await User.create({
             name,
             email,
@@ -159,7 +189,12 @@ const registerUser = async (req, res) => {
             role,
         });
 
-        
+
+
+        await Otp.deleteOne({ email });
+
+
+
         const token = jwt.sign(
             {
                 id: user._id,
@@ -170,6 +205,8 @@ const registerUser = async (req, res) => {
                 expiresIn: "7d",
             }
         );
+
+
 
         return res.status(201).json({
             success: true,
@@ -187,10 +224,8 @@ const registerUser = async (req, res) => {
         });
 
     }
+
 };
-
-
-
 
 const loginUser = async (req, res) => {
 

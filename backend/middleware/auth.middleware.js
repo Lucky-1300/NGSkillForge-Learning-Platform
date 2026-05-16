@@ -4,13 +4,18 @@ const authMiddleware = async (req, res, next) => {
 
     try {
 
-        const token = req.header("Authorization");
+        let token = req.header("Authorization");
 
         if (!token) {
             return res.status(401).json({
                 success: false,
                 message: "Access Denied. No Token Provided",
             });
+        }
+
+        // Remove Bearer prefix if present
+        if (token.startsWith("Bearer ")) {
+            token = token.slice(7);
         }
 
         const verifiedToken = jwt.verify(

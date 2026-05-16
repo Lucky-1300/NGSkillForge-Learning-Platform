@@ -1,4 +1,4 @@
-const course = require("../models/course.model")
+const Course = require("../models/course.model")
 
 
 

@@ -7,6 +7,8 @@ const {
     verifyOtp,
     registerUser,
     loginUser,
+    refreshToken,
+    logoutUser,
 } = require("../controllers/auth.controller");
 
 const {
@@ -46,4 +48,18 @@ router.post(
 
 
 
-module.exports = router;
+router.post(
+    "/refresh-token",
+    refreshToken
+); 
+
+
+
+router.post(
+    "/logout",
+    logoutUser
+);
+
+
+
+module.exports = router;                                                                                                  

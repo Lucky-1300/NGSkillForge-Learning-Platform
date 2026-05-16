@@ -1,3 +1,4 @@
+// This file stores assignment details and uploaded file info.
 const mongoose = require("mongoose");
 
 const assignmentSchema = new mongoose.Schema(

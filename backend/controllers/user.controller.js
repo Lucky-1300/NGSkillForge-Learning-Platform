@@ -1,3 +1,4 @@
+// This file handles user profile, listing users, and deleting users.
 const User = require("../models/user.model");
 
 

@@ -1,3 +1,4 @@
+// This file configures file uploads using Multer.
 const multer = require("multer");
 
 const storage = multer.diskStorage({

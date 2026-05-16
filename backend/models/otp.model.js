@@ -1,3 +1,4 @@
+// This file stores OTP codes and their expiry time.
 const mongoose = require("mongoose");
 
 const otpSchema = new mongoose.Schema(

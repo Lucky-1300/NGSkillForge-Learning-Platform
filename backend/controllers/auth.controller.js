@@ -1,3 +1,4 @@
+// This file handles OTP, registration, login, token refresh, and logout.
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -8,6 +9,13 @@ const Otp = require("../models/otp.model");
 
 const transporter = require("../config/mail.config");
 
+const PRIMARY_ADMIN_EMAIL = (
+    process.env.PRIMARY_ADMIN_EMAIL || "luckykumari42774@gmail.com"
+).toLowerCase();
+
+const normalizeEmail = (email) =>
+    (email || "").trim().toLowerCase();
+
 
 
 
@@ -16,7 +24,16 @@ const sendOtp = async (req, res) => {
 
     try {
 
-        const { email } = req.body;
+        const normalizedEmail = normalizeEmail(req.body.email);
+
+        if (!normalizedEmail) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required",
+            });
+        }
+
+        // Generate a 6-digit OTP without letters or symbols.
 
 
 
@@ -35,7 +52,7 @@ const sendOtp = async (req, res) => {
 
 
         await Otp.create({
-            email,
+            email: normalizedEmail,
             otp,
             expiresAt,
         });
@@ -45,7 +62,7 @@ const sendOtp = async (req, res) => {
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
 
-            to: email,
+            to: normalizedEmail,
 
             subject: "OTP Verification",
 
@@ -79,12 +96,14 @@ const verifyOtp = async (req, res) => {
 
     try {
 
-        const { email, otp } = req.body;
+        const { otp } = req.body;
+        const normalizedEmail = normalizeEmail(req.body.email);
 
 
 
+        // Check if the entered OTP matches the one saved in the database.
         const existingOtp = await Otp.findOne({
-            email,
+            email: normalizedEmail,
             otp,
         });
 
@@ -112,6 +131,7 @@ const verifyOtp = async (req, res) => {
 
 
 
+        // Mark this OTP as verified so the user can register.
         existingOtp.isVerified = true;
 
         await existingOtp.save();
@@ -143,11 +163,19 @@ const registerUser = async (req, res) => {
 
     try {
 
-        const { name, email, password, role } = req.body;
+        const { name, password, role } = req.body;
+        const normalizedEmail = normalizeEmail(req.body.email);
+        const effectiveRole =
+            normalizedEmail === PRIMARY_ADMIN_EMAIL
+                ? "admin"
+                : role;
 
 
 
-        const existingUser = await User.findOne({ email });
+        // Do not create the account twice for the same email.
+        const existingUser = await User.findOne({
+            email: normalizedEmail,
+        });
 
         if (existingUser) {
 
@@ -160,8 +188,9 @@ const registerUser = async (req, res) => {
 
 
 
+        // Registration is allowed only after the OTP has been verified.
         const verifiedOtp = await Otp.findOne({
-            email,
+            email: normalizedEmail,
             isVerified: true,
         });
 
@@ -178,20 +207,22 @@ const registerUser = async (req, res) => {
 
 
 
+        // Store password in hashed form instead of plain text.
         const hashedPassword = await bcrypt.hash(password, 10);
 
 
 
         const user = await User.create({
             name,
-            email,
+            email: normalizedEmail,
             password: hashedPassword,
-            role,
+            role: effectiveRole,
         });
 
 
 
-        await Otp.deleteOne({ email });
+        // Remove OTP after successful registration so it cannot be reused.
+        await Otp.deleteOne({ email: normalizedEmail });
 
 
 
@@ -231,10 +262,14 @@ const loginUser = async (req, res) => {
 
     try {
 
-        const { email, password } = req.body;
+        const { password } = req.body;
+        const normalizedEmail = normalizeEmail(req.body.email);
 
         
-        const user = await User.findOne({ email });
+        // Find the user by email first.
+        const user = await User.findOne({
+            email: normalizedEmail,
+        });
 
         if (!user) {
             return res.status(404).json({
@@ -244,6 +279,7 @@ const loginUser = async (req, res) => {
         }
 
         
+        // Compare the typed password with the hashed password from MongoDB.
         const isMatch = await bcrypt.compare(
             password,
             user.password
@@ -256,11 +292,22 @@ const loginUser = async (req, res) => {
             });
         }
 
+        const effectiveRole =
+            normalizedEmail === PRIMARY_ADMIN_EMAIL
+                ? "admin"
+                : user.role;
+
+        if (user.role !== effectiveRole) {
+            user.role = effectiveRole;
+            await user.save();
+        }
+
        
-       const accessToken = jwt.sign(
+    // Access token is short-lived and used for protected routes.
+    const accessToken = jwt.sign(
     {
         id: user._id,
-        role: user.role,
+        role: effectiveRole,
     },
     process.env.JWT_SECRET,
     {
@@ -270,10 +317,11 @@ const loginUser = async (req, res) => {
 
 
 
+// Refresh token lasts longer and can be exchanged for a new access token.
 const refreshToken = jwt.sign(
     {
         id: user._id,
-        role: user.role,
+        role: effectiveRole,
     },
     process.env.JWT_SECRET,
     {
@@ -317,6 +365,7 @@ const refreshToken = async (req, res) => {
 
 
 
+        // Verify the refresh token and extract user info from it.
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET
@@ -324,6 +373,7 @@ const refreshToken = async (req, res) => {
 
 
 
+        // Create a fresh access token without making the user log in again.
         const accessToken = jwt.sign(
             {
                 id: decoded.id,

@@ -1,3 +1,4 @@
+// This file handles course enrollment and getting a user's enrollments.
 const Enrollment = require("../models/enrollment.model");
 
 const Course = require("../models/course.model");
@@ -11,6 +12,7 @@ const enrollCourse = async (req, res) => {
 
 
 
+        // Make sure the course exists before enrolling the user.
         const course = await Course.findById(courseId);
 
         if (!course) {
@@ -24,6 +26,7 @@ const enrollCourse = async (req, res) => {
 
 
 
+        // Stop the user from enrolling in the same course more than once.
         const existingEnrollment =
         await Enrollment.findOne({
             user: req.user.id,
@@ -43,6 +46,7 @@ const enrollCourse = async (req, res) => {
 
 
 
+        // Create the enrollment record with the logged-in user's id.
         const enrollment = await Enrollment.create({
             user: req.user.id,
             course: courseId,
@@ -76,6 +80,7 @@ const getMyEnrollments = async (req, res) => {
 
     try {
 
+        // Fetch only the enrollments that belong to the current user.
         const enrollments =
         await Enrollment.find({
             user: req.user.id,

@@ -1,3 +1,4 @@
+// This file connects the app to MongoDB using Mongoose.
 const mongoose = require("mongoose");
 
 const connectDB = async () => {

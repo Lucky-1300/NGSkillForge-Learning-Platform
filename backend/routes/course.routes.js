@@ -1,3 +1,4 @@
+// This file contains course API routes.
 const express = require("express");
 
 const router = express.Router();

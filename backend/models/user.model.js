@@ -1,3 +1,4 @@
+// This file defines the user data saved in MongoDB.
 const mongoose = require("mongoose");
 
 const userSChema = new mongoose.Schema({

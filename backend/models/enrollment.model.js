@@ -1,3 +1,4 @@
+// This file stores which user enrolled in which course.
 const mongoose = require("mongoose");
 
 const enrollmentSchema = new mongoose.Schema(

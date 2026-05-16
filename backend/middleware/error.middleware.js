@@ -1,3 +1,4 @@
+// This middleware sends a clean JSON response when something goes wrong.
 const errorMiddleware = (
     err,
     req,

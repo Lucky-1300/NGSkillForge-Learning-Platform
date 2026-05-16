@@ -1,3 +1,4 @@
+// This file contains all auth API routes.
 const express = require("express");
 
 const router = express.Router();

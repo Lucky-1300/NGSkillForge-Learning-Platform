@@ -1,3 +1,4 @@
+// This file handles assignment upload, listing, reading, and deleting.
 const Assignment = require("../models/assignment.model");
 
 const cloudinary = require("cloudinary").v2;
@@ -28,6 +29,7 @@ const uploadAssignment = async (req, res) => {
 
 
 
+        // Upload the file to Cloudinary and get its public URL back.
         const result = await cloudinary.uploader.upload(
             req.file.path,
             {
@@ -38,6 +40,7 @@ const uploadAssignment = async (req, res) => {
 
 
 
+        // Save assignment metadata and file details in MongoDB.
         const assignment = await Assignment.create({
             title,
             description,
@@ -76,6 +79,7 @@ const getAllAssignments = async (req, res) => {
 
     try {
 
+        // Show assignment details along with who uploaded them and which course they belong to.
         const assignments = await Assignment.find()
         .populate("uploadedBy", "name email")
         .populate("course", "title");
@@ -107,6 +111,7 @@ const getSingleAssignment = async (req, res) => {
 
     try {
 
+        // Find one assignment and include related user and course details.
         const assignment = await Assignment.findById(
             req.params.id
         )
@@ -149,6 +154,7 @@ const deleteAssignment = async (req, res) => {
 
     try {
 
+        // First find the assignment so we can delete its file from Cloudinary too.
         const assignment = await Assignment.findById(
             req.params.id
         );
@@ -164,6 +170,7 @@ const deleteAssignment = async (req, res) => {
 
 
 
+        // Remove the file from Cloudinary before deleting the database record.
         await cloudinary.uploader.destroy(
             assignment.publicId
         );

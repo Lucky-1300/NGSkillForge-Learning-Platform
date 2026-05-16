@@ -1,3 +1,4 @@
+// This file sets up email sending for OTP and other messages.
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({

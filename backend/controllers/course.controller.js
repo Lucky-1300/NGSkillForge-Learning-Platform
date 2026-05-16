@@ -1,3 +1,4 @@
+// This file handles course create, read, update, delete, search, and pagination.
 const Course = require("../models/course.model")
 
 
@@ -9,6 +10,7 @@ const createCourse = async (req, res) => {
 
     try {
 
+        // Save the course exactly as sent in the request body.
         const course = await Course.create(req.body);
 
         return res.status(201).json({
@@ -34,6 +36,7 @@ const getAllCourses = async (req, res) => {
 
     try {
 
+        // Read pagination and search values from the query string.
         const page = Number(req.query.page) || 1;
 
         const limit = Number(req.query.limit) || 5;
@@ -50,6 +53,7 @@ const getAllCourses = async (req, res) => {
 
 
 
+        // Search by course title if the user passes ?search=...
         if (search) {
             filter.title = {
                 $regex: search,
@@ -59,6 +63,7 @@ const getAllCourses = async (req, res) => {
 
 
 
+        // Filter courses by category if ?category=... is provided.
         if (category) {
             filter.category = category;
         }
@@ -101,6 +106,7 @@ const getSingleCourse = async (req, res) => {
 
     try {
 
+        // Find one course by its MongoDB id.
         const course = await Course.findById(req.params.id);
 
         if (!course) {
@@ -134,6 +140,7 @@ const updateCourse = async (req, res) => {
 
     try {
 
+        // Update only the fields that come in the request body.
         const updatedCourse = await Course.findByIdAndUpdate(
             req.params.id,
             req.body,
@@ -173,6 +180,7 @@ const deleteCourse = async (req, res) => {
 
     try {
 
+        // Remove the course from MongoDB using its id.
         const deletedCourse = await Course.findByIdAndDelete(
             req.params.id
         );

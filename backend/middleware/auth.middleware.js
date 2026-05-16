@@ -1,3 +1,4 @@
+// This middleware checks the JWT token and adds user info to the request.
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
@@ -14,10 +15,12 @@ const authMiddleware = async (req, res, next) => {
         }
 
         // Remove Bearer prefix if present
+        // Postman sends Bearer token, so remove that part before verification.
         if (token.startsWith("Bearer ")) {
             token = token.slice(7);
         }
 
+        // Decode and verify the token using the app secret key.
         const verifiedToken = jwt.verify(
             token,
             process.env.JWT_SECRET

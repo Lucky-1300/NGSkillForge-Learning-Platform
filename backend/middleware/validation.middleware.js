@@ -1,3 +1,4 @@
+// This middleware checks if request data is valid before saving.
 const validateRegister = (req, res, next) => {
 
     try {

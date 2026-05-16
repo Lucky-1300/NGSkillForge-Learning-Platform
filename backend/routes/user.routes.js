@@ -1,3 +1,4 @@
+// This file contains user-related API routes.
 const express = require("express");
 
 const router = express.Router();

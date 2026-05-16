@@ -1,3 +1,4 @@
+// This middleware checks if the user has the right role.
 const roleMiddleware = (...roles) => {
 
     return (req, res, next) => {

@@ -1,3 +1,4 @@
+// This file defines the course data saved in MongoDB.
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema(

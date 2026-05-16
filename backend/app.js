@@ -1,3 +1,4 @@
+// Main server file that starts the app, loads routes, middleware, and connects to the database.
 require("dotenv").config();
 
 const express = require("express");

@@ -1,0 +1,313 @@
+{
+  "info": {
+    "name": "NGSkillForge Learning Platform",
+    "_postman_id": "a8dd6cd2-bf34-4f8f-a9e1-d6af4663e600",
+    "description": "API collection for testing backend endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "email", "value": "luckykumari42774@gmail.com" },
+    { "key": "password", "value": "123456" },
+    { "key": "otp", "value": "123456" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "courseId", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "assignmentId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Send OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/send-otp"
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"otp\": \"{{otp}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/verify-otp"
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"user\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = {};",
+                  "try { jsonData = pm.response.json(); } catch (e) {}",
+                  "if (jsonData.accessToken) pm.environment.set('accessToken', jsonData.accessToken);",
+                  "if (jsonData.refreshToken) pm.environment.set('refreshToken', jsonData.refreshToken);",
+                  "if (jsonData.user && jsonData.user._id) pm.environment.set('userId', jsonData.user._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = {};",
+                  "try { jsonData = pm.response.json(); } catch (e) {}",
+                  "if (jsonData.accessToken) pm.environment.set('accessToken', jsonData.accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{refreshToken}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/refresh-token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Courses",
+      "item": [
+        {
+          "name": "Create Course (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let jsonData = {};",
+                  "try { jsonData = pm.response.json(); } catch (e) {}",
+                  "if (jsonData.course && jsonData.course._id) pm.collectionVariables.set('courseId', jsonData.course._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Node.js Bootcamp\",\n  \"description\": \"Complete backend fundamentals\",\n  \"instructor\": \"NG Mentor\",\n  \"price\": 999,\n  \"thumbnail\": \"https://example.com/thumb.jpg\",\n  \"category\": \"Backend\",\n  \"level\": \"Beginner\",\n  \"duration\": \"8 weeks\"\n}"
+            },
+            "url": "{{baseUrl}}/api/courses/create-course"
+          }
+        },
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/courses/all-courses?page=1&limit=5&search=&category="
+          }
+        },
+        {
+          "name": "Get Single Course",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/courses/single-course/{{courseId}}"
+          }
+        },
+        {
+          "name": "Update Course (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 1299,\n  \"level\": \"Intermediate\"\n}"
+            },
+            "url": "{{baseUrl}}/api/courses/update-course/{{courseId}}"
+          }
+        },
+        {
+          "name": "Delete Course (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/courses/delete-course/{{courseId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Users",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/users/profile"
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/users/all-users"
+          }
+        },
+        {
+          "name": "Delete User (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/users/delete-user/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Enrollments",
+      "item": [
+        {
+          "name": "Enroll Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseId\": \"{{courseId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/enrollments/enroll-course"
+          }
+        },
+        {
+          "name": "My Enrollments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/enrollments/my-enrollments"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Assignments",
+      "item": [
+        {
+          "name": "Upload Assignment (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Assignment 1", "type": "text" },
+                { "key": "description", "value": "Intro assignment", "type": "text" },
+                { "key": "course", "value": "{{courseId}}", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/assignments/upload-assignment"
+          }
+        },
+        {
+          "name": "Get All Assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/assignments/all-assignments"
+          }
+        },
+        {
+          "name": "Get Single Assignment",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/assignments/single-assignment/{{assignmentId}}"
+          }
+        },
+        {
+          "name": "Delete Assignment (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "url": "{{baseUrl}}/api/assignments/delete-assignment/{{assignmentId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

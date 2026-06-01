@@ -25,6 +25,10 @@ app.use(express.json());
 
 app.use(loggerMiddleware);
 
+// Root route
+app.get("/", (req, res) => {
+    res.json({ message: "NGSkillForge API is running" });
+});
 
 app.use("/api/auth", authRoutes);
 

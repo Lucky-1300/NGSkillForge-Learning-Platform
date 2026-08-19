@@ -15,12 +15,16 @@ const {
 const {
     validateRegister,
     validateLogin,
+    validateOtpRequest,
+    validateOtpVerification,
+    validateRefreshToken,
 } = require("../middleware/validation.middleware");
 
 
 
 router.post(
     "/send-otp",
+    validateOtpRequest,
     sendOtp
 );
 
@@ -28,6 +32,7 @@ router.post(
 
 router.post(
     "/verify-otp",
+    validateOtpVerification,
     verifyOtp
 );
 
@@ -51,6 +56,7 @@ router.post(
 
 router.post(
     "/refresh-token",
+    validateRefreshToken,
     refreshToken
 ); 
 

@@ -9,12 +9,14 @@ const {
 } = require("../controllers/enrollment.controller");
 
 const authMiddleware = require("../middleware/auth.middleware");
+const { validateEnrollment } = require("../middleware/validation.middleware");
 
 
 
 router.post(
     "/enroll-course",
     authMiddleware,
+    validateEnrollment,
     enrollCourse
 );
 

@@ -6,13 +6,20 @@ const errorMiddleware = (
     next
 ) => {
 
-    return res.status(
-        err.status || 500
-    ).json({
+    const status = err.status ||
+        (err.name === "ValidationError" || err.name === "CastError" ? 400 :
+            err.code === 11000 ? 409 :
+                err.name === "MulterError" ? 400 : 500);
+
+    if (status >= 500) {
+        console.error("Unhandled request error:", err);
+    }
+
+    return res.status(status).json({
         success: false,
-        message:
-            err.message ||
-            "Internal Server Error",
+        message: status >= 500 && process.env.NODE_ENV === "production"
+            ? "Internal Server Error"
+            : err.message || "Internal Server Error",
     });
 
 };

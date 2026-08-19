@@ -14,6 +14,12 @@ const {
 const authMiddleware = require("../middleware/auth.middleware");
 
 const roleMiddleware = require("../middleware/role.middleware");
+const {
+    validateCourse,
+    validateCourseUpdate,
+    validateCourseQuery,
+    validateObjectId,
+} = require("../middleware/validation.middleware");
 
 
 
@@ -21,6 +27,7 @@ router.post(
     "/create-course",
     authMiddleware,
     roleMiddleware("admin"),
+    validateCourse,
     createCourse
 );
 
@@ -28,6 +35,7 @@ router.post(
 
 router.get(
     "/all-courses",
+    validateCourseQuery,
     getAllCourses
 );
 
@@ -35,6 +43,7 @@ router.get(
 
 router.get(
     "/single-course/:id",
+    validateObjectId(),
     getSingleCourse
 );
 
@@ -44,6 +53,8 @@ router.put(
     "/update-course/:id",
     authMiddleware,
     roleMiddleware("admin"),
+    validateObjectId(),
+    validateCourseUpdate,
     updateCourse
 );
 
@@ -53,6 +64,7 @@ router.delete(
     "/delete-course/:id",
     authMiddleware,
     roleMiddleware("admin"),
+    validateObjectId(),
     deleteCourse
 );
 

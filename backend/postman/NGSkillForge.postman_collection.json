@@ -18,6 +18,13 @@
   ],
   "item": [
     {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health"
+      }
+    },
+    {
       "name": "1. Auth",
       "item": [
         {

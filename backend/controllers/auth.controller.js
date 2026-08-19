@@ -16,6 +16,12 @@ const PRIMARY_ADMIN_EMAIL = (
 const normalizeEmail = (email) =>
     (email || "").trim().toLowerCase();
 
+const publicUser = (user) => {
+    const value = user.toObject ? user.toObject() : { ...user };
+    delete value.password;
+    return value;
+};
+
 
 
 
@@ -49,6 +55,7 @@ const sendOtp = async (req, res) => {
             Date.now() + 5 * 60 * 1000
         );
 
+        await Otp.deleteMany({ email: normalizedEmail });
 
 
         await Otp.create({
@@ -105,6 +112,8 @@ const verifyOtp = async (req, res) => {
         const existingOtp = await Otp.findOne({
             email: normalizedEmail,
             otp,
+            isVerified: false,
+            expiresAt: { $gte: new Date() },
         });
 
 
@@ -114,17 +123,6 @@ const verifyOtp = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Invalid OTP",
-            });
-
-        }
-
-
-
-        if (existingOtp.expiresAt < new Date()) {
-
-            return res.status(400).json({
-                success: false,
-                message: "OTP expired",
             });
 
         }
@@ -163,12 +161,12 @@ const registerUser = async (req, res) => {
 
     try {
 
-        const { name, password, role } = req.body;
+        const { name, password } = req.body;
         const normalizedEmail = normalizeEmail(req.body.email);
         const effectiveRole =
             normalizedEmail === PRIMARY_ADMIN_EMAIL
                 ? "admin"
-                : role;
+                : "user";
 
 
 
@@ -243,7 +241,7 @@ const registerUser = async (req, res) => {
             success: true,
             message: "User registered successfully",
             token,
-            user,
+            user: publicUser(user),
         });
 
     } catch (error) {
@@ -269,7 +267,7 @@ const loginUser = async (req, res) => {
         // Find the user by email first.
         const user = await User.findOne({
             email: normalizedEmail,
-        });
+        }).select("+password");
 
         if (!user) {
             return res.status(404).json({
@@ -334,7 +332,7 @@ const refreshToken = jwt.sign(
             message: "Login successful",
             accessToken,
             refreshToken,
-            user,
+            user: publicUser(user),
 });
 
     } catch (error) {
@@ -394,10 +392,9 @@ const refreshToken = async (req, res) => {
 
     } catch (error) {
 
-        return res.status(500).json({
+        return res.status(error.name === "TokenExpiredError" || error.name === "JsonWebTokenError" ? 401 : 500).json({
             success: false,
             message: "Refresh token failed",
-            error: error.message,
         });
 
     }

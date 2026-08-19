@@ -1,0 +1,5 @@
+import { useEffect, useState } from 'react'
+import { FiUser } from 'react-icons/fi'
+import api, { messageFrom } from '../services/api.js'
+import Loader from '../components/Loader.jsx'
+export default function Profile() { const [user, setUser] = useState(null); const [error, setError] = useState(''); useEffect(() => { api.get('/users/profile').then(({ data }) => setUser(data.user)).catch((err) => setError(messageFrom(err))) }, []); return <section className="section"><div className="container" style={{ maxWidth: 760 }}><div className="section-heading"><span className="eyebrow">Account</span><h1>Your profile</h1><p className="muted">Your account details and learning identity.</p></div>{!user && !error ? <Loader /> : error ? <div className="status error">{error}</div> : <div className="detail-aside"><div className="feature-icon"><FiUser /></div><div className="meta-list"><span>Name <strong>{user.name}</strong></span><span>Email <strong>{user.email}</strong></span><span>Role <strong>{user.role}</strong></span></div></div>}</div></section> }

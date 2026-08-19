@@ -6,21 +6,28 @@ const courseSchema = new mongoose.Schema(
         title: {
             type: String,
             required: true,
+            trim: true,
+            maxlength: 200,
         },
 
         description: {
             type: String,
             required: true,
+            trim: true,
+            maxlength: 3000,
         },
 
         instructor: {
             type: String,
             required: true,
+            trim: true,
+            maxlength: 150,
         },
 
         price: {
             type: Number,
             required: true,
+            min: 0,
         },
 
         thumbnail: {
@@ -31,6 +38,8 @@ const courseSchema = new mongoose.Schema(
         category: {
             type: String,
             required: true,
+            trim: true,
+            maxlength: 100,
         },
 
         level: {
@@ -42,6 +51,8 @@ const courseSchema = new mongoose.Schema(
         duration: {
             type: String,
             required: true,
+            trim: true,
+            maxlength: 100,
         },
     },
     {

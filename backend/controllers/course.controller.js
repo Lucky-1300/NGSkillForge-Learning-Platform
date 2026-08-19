@@ -1,6 +1,8 @@
 // This file handles course create, read, update, delete, search, and pagination.
 const Course = require("../models/course.model")
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 
 
 
@@ -56,7 +58,7 @@ const getAllCourses = async (req, res) => {
         // Search by course title if the user passes ?search=...
         if (search) {
             filter.title = {
-                $regex: search,
+                $regex: escapeRegex(search),
                 $options: "i",
             };
         }
@@ -66,6 +68,10 @@ const getAllCourses = async (req, res) => {
         // Filter courses by category if ?category=... is provided.
         if (category) {
             filter.category = category;
+        }
+
+        if (req.query.level) {
+            filter.level = req.query.level;
         }
 
 

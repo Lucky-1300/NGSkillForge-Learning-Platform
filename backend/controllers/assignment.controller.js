@@ -1,5 +1,6 @@
 // This file handles assignment upload, listing, reading, and deleting.
 const Assignment = require("../models/assignment.model");
+const fs = require("fs/promises");
 
 const cloudinary = require("cloudinary").v2;
 
@@ -15,6 +16,7 @@ cloudinary.config({
 
 
 const uploadAssignment = async (req, res) => {
+    let uploadedPublicId;
 
     try {
 
@@ -37,6 +39,7 @@ const uploadAssignment = async (req, res) => {
                 folder: "assignments",
             }
         );
+        uploadedPublicId = result.public_id;
 
 
 
@@ -51,6 +54,8 @@ const uploadAssignment = async (req, res) => {
             course,
         });
 
+        await fs.unlink(req.file.path).catch(() => {});
+
 
 
         return res.status(201).json({
@@ -60,6 +65,13 @@ const uploadAssignment = async (req, res) => {
         });
 
     } catch (error) {
+
+        if (req.file?.path) {
+            await fs.unlink(req.file.path).catch(() => {});
+        }
+        if (uploadedPublicId) {
+            await cloudinary.uploader.destroy(uploadedPublicId).catch(() => {});
+        }
 
         return res.status(500).json({
             success: false,

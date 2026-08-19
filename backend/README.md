@@ -1,294 +1,145 @@
-# NGSkillForge Learning Platform Backend
+# NGSkillForge Learning Platform API
 
-## Project Overview
+The backend is an Express/Mongoose REST API for the NGSkillForge learning platform. It provides OTP-backed registration, JWT authentication, role-protected administration, courses, assignments, and enrollments.
 
-NGSkillForge Learning Platform Backend is a Node.js and Express.js based REST API developed for managing an online learning platform. The backend provides authentication, authorization, course management, assignment uploads, OTP verification, enrollment management, and secure user handling.
+## Stack
 
-The project follows a professional MVC architecture using MongoDB Atlas for database management and Cloudinary for cloud-based file storage.
+- Node.js and Express 5
+- MongoDB with Mongoose
+- JWT and bcryptjs
+- Nodemailer for OTP email
+- Multer and Cloudinary for assignment files
+- Morgan, CORS, and express-rate-limit
 
----
+## Setup
 
-# Features
-
-## Authentication & Authorization
-
-* User Registration
-* User Login
-* JWT Authentication
-* Refresh Token System
-* Logout API
-* OTP Email Verification using Nodemailer
-* Role-Based Access Control (Admin/User)
-* Protected Routes
-
-## User Management
-
-* Get User Profile
-* Admin View All Users
-* Admin Delete User
-
-## Course Management
-
-* Create Course
-* Update Course
-* Delete Course
-* Get Single Course
-* Get All Courses
-* Pagination
-* Search Functionality
-* Filtering
-
-## Assignment Management
-
-* Upload Assignments
-* Cloudinary File Storage
-* Retrieve Assignments
-* Delete Assignments
-* Multer File Validation
-
-## Enrollment System
-
-* Enroll in Courses
-* Get User Enrollments
-
-## Middleware
-
-* Validation Middleware
-* Authentication Middleware
-* Role Middleware
-* Logger Middleware
-* Global Error Middleware
-
----
-
-# Tech Stack
-
-## Backend
-
-* Node.js
-* Express.js
-
-## Database
-
-* MongoDB Atlas
-* Mongoose
-
-## Authentication
-
-* JWT
-* bcryptjs
-
-## File Upload
-
-* Multer
-* Cloudinary
-
-## Email Service
-
-* Nodemailer
-* OTP Generator
-
-## Logging
-
-* Morgan
-
----
-
-# Folder Structure
-
-```bash
-backend/
-│
-├── config/
-│   ├── cloudinary.config.js
-│   └── mail.config.js
-│
-├── controllers/
-│   ├── assignment.controller.js
-│   ├── auth.controller.js
-│   ├── course.controller.js
-│   ├── enrollment.controller.js
-│   └── user.controller.js
-│
-├── middleware/
-│   ├── auth.middleware.js
-│   ├── error.middleware.js
-│   ├── logger.middleware.js
-│   ├── role.middleware.js
-│   ├── upload.middleware.js
-│   └── validation.middleware.js
-│
-├── models/
-│   ├── assignment.model.js
-│   ├── course.model.js
-│   ├── enrollment.model.js
-│   ├── otp.model.js
-│   └── user.model.js
-│
-├── routes/
-│   ├── assignment.routes.js
-│   ├── auth.routes.js
-│   ├── course.routes.js
-│   ├── enrollment.routes.js
-│   └── user.routes.js
-│
-├── uploads/
-├── .env
-├── app.js
-├── package.json
-└── README.md
-```
-
----
-
-# Installation & Setup
-
-## Clone Repository
-
-```bash
-git clone <repository-url>
-```
-
-## Move Into Project Directory
-
-```bash
+```powershell
 cd backend
-```
-
-## Install Dependencies
-
-```bash
 npm install
-```
-
-## Create .env File
-
-```env
-PORT=5000
-
-MONGO_URI=your_mongodb_connection_string
-
-JWT_SECRET=your_jwt_secret
-
-EMAIL_USER=your_email@gmail.com
-
-EMAIL_PASS=your_gmail_app_password
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-
-CLOUDINARY_API_KEY=your_api_key
-
-CLOUDINARY_API_SECRET=your_api_secret
-```
-
-## Start Server
-
-```bash
+Copy-Item .env.example .env
 npm run dev
 ```
 
----
+`npm start` runs the production-style Node process. The API listens on `PORT` (default `5000`). The server requires a reachable MongoDB instance before protected data operations can work.
 
-# API Endpoints
+## Environment variables
 
-# Authentication Routes
+| Variable | Purpose |
+| --- | --- |
+| `PORT` | HTTP port, default `5000` |
+| `NODE_ENV` | `development` or `production`; production hides internal error details |
+| `MONGO_URI` | MongoDB connection string |
+| `JWT_SECRET` | Secret used for access and refresh JWTs |
+| `FRONTEND_URLS` | Comma-separated allowed browser origins, default `http://localhost:5173` |
+| `PRIMARY_ADMIN_EMAIL` | Email that receives the configured primary admin role |
+| `AUTH_RATE_WINDOW_MS` | Authentication rate-limit window, default 15 minutes |
+| `AUTH_RATE_LIMIT` | Authentication requests per window, default 100 |
+| `EMAIL_USER` / `EMAIL_PASS` | SMTP/Gmail credentials used for OTP delivery |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
 
-| Method | Endpoint                |
-| ------ | ----------------------- |
-| POST   | /api/auth/register      |
-| POST   | /api/auth/login         |
-| POST   | /api/auth/send-otp      |
-| POST   | /api/auth/verify-otp    |
-| POST   | /api/auth/refresh-token |
-| POST   | /api/auth/logout        |
+Never commit `.env` or real credentials. `.env.example` contains placeholders only.
 
----
+## Structure
 
-# User Routes
+```text
+backend/
+  app.js
+  config/          database and mail configuration
+  controllers/     request handlers
+  middleware/      auth, roles, validation, uploads, logging, errors
+  models/          User, Otp, Course, Assignment, Enrollment
+  routes/          feature route modules
+  uploads/         temporary assignment upload directory
+  postman/         collection and local environment
+```
 
-| Method | Endpoint                   |
-| ------ | -------------------------- |
-| GET    | /api/users/profile         |
-| GET    | /api/users/all-users       |
-| DELETE | /api/users/delete-user/:id |
+## Authentication flow
 
----
+1. `POST /api/auth/send-otp` with `{ "email": "person@example.com" }`.
+2. `POST /api/auth/verify-otp` with the email and six-digit OTP.
+3. `POST /api/auth/register` with `name`, `email`, and `password`. Registration requires a verified OTP. The server assigns the normal `user` role; the configured primary admin email receives `admin`.
+4. `POST /api/auth/login` returns `accessToken`, `refreshToken`, and a public user object.
+5. Send the access token as `Authorization: Bearer <token>` to protected routes.
+6. `POST /api/auth/refresh-token` with `{ "token": "<refreshToken>" }` returns a new access token.
+7. `POST /api/auth/logout` returns a confirmation. JWTs are otherwise stateless, so clients should discard both tokens.
 
-# Course Routes
+Authentication and OTP endpoints are rate limited. Password hashes, OTP values, and tokens are never returned by the API.
 
-| Method | Endpoint                       |
-| ------ | ------------------------------ |
-| POST   | /api/courses/create-course     |
-| GET    | /api/courses/all-courses       |
-| GET    | /api/courses/single-course/:id |
-| PUT    | /api/courses/update-course/:id |
-| DELETE | /api/courses/delete-course/:id |
+## API endpoints
 
----
+### Health
 
-# Assignment Routes
+`GET /api/health` is public and returns the API and current MongoDB connection state.
 
-| Method | Endpoint                               |
-| ------ | -------------------------------------- |
-| POST   | /api/assignments/upload-assignment     |
-| GET    | /api/assignments/all-assignments       |
-| GET    | /api/assignments/single-assignment/:id |
-| DELETE | /api/assignments/delete-assignment/:id |
+### Auth
 
----
+| Method | Path | Auth |
+| --- | --- | --- |
+| `POST` | `/api/auth/send-otp` | Public |
+| `POST` | `/api/auth/verify-otp` | Public |
+| `POST` | `/api/auth/register` | Public, verified OTP required |
+| `POST` | `/api/auth/login` | Public |
+| `POST` | `/api/auth/refresh-token` | Public with refresh token |
+| `POST` | `/api/auth/logout` | Public |
 
-# Enrollment Routes
+### Users
 
-| Method | Endpoint                        |
-| ------ | ------------------------------- |
-| POST   | /api/enrollments/enroll-course  |
-| GET    | /api/enrollments/my-enrollments |
+| Method | Path | Auth |
+| --- | --- | --- |
+| `GET` | `/api/users/profile` | User |
+| `GET` | `/api/users/all-users` | Admin |
+| `DELETE` | `/api/users/delete-user/:id` | Admin |
 
----
+### Courses
 
-# Authentication Flow
+| Method | Path | Auth |
+| --- | --- | --- |
+| `POST` | `/api/courses/create-course` | Admin |
+| `GET` | `/api/courses/all-courses` | Public |
+| `GET` | `/api/courses/single-course/:id` | Public |
+| `PUT` | `/api/courses/update-course/:id` | Admin |
+| `DELETE` | `/api/courses/delete-course/:id` | Admin |
 
-1. User sends OTP
-2. OTP is emailed using Nodemailer
-3. User verifies OTP
-4. User registers account
-5. User logs in
-6. JWT access token generated
-7. Protected routes accessed using token
+Course listing supports `page`, `limit` (maximum 100), `search`, `category`, and `level` (`Beginner`, `Intermediate`, or `Advanced`). Example:
 
----
+```text
+GET /api/courses/all-courses?page=1&limit=10&search=node&category=Backend&level=Beginner
+```
 
-# Security Features
+The existing response keys remain compatible: `courses`, `totalCourses`, `currentPage`, and `totalPages`.
 
-* Password Hashing using bcryptjs
-* JWT Authentication
-* Role-Based Authorization
-* Protected APIs
-* File Type Validation
-* File Size Validation
-* OTP Expiration System
-* Environment Variable Protection
+### Assignments
 
----
+| Method | Path | Auth |
+| --- | --- | --- |
+| `POST` | `/api/assignments/upload-assignment` | Admin, multipart form |
+| `GET` | `/api/assignments/all-assignments` | User |
+| `GET` | `/api/assignments/single-assignment/:id` | User |
+| `DELETE` | `/api/assignments/delete-assignment/:id` | Admin |
 
-# Future Improvements
+Upload fields are `title`, `description`, `course`, and `file`. Accepted MIME types are JPEG, PNG, MP4, and PDF. Files are limited to 5 MB and are uploaded to Cloudinary; temporary local files are removed after processing.
 
-* Forgot Password Feature
-* Reset Password
-* Swagger API Documentation
-* Docker Deployment
-* Rate Limiting
-* Payment Integration
-* Course Reviews & Ratings
+### Enrollments
 
----
+| Method | Path | Auth |
+| --- | --- | --- |
+| `POST` | `/api/enrollments/enroll-course` | User |
+| `GET` | `/api/enrollments/my-enrollments` | User |
 
-# Author
+Enroll with `{ "courseId": "<course ObjectId>" }`. Duplicate enrollment is rejected.
 
-Lucky Ray
+## Responses and errors
 
----
+Existing successful response shapes are preserved for compatibility. Responses include `success: true` and a message where the original API provided one. Errors use:
 
-# License
+```json
+{ "success": false, "message": "A clear error message" }
+```
 
-This project is created for educational and hackathon purposes.
+Validation failures and invalid IDs return `400`; missing/invalid authentication returns `401`; insufficient roles return `403`; missing records return `404`; conflicts return `409`; unexpected production errors return a generic `500` response. Detailed server errors are logged server-side only.
+
+## Postman
+
+Import `postman/NGSkillForge.postman_collection.json` and select `postman/NGSkillForge.local.postman_environment.json`. The collection includes the health check and the existing authentication, course, user, enrollment, and assignment requests.

@@ -1,0 +1,21 @@
+import { Navigate, Route, Routes } from 'react-router-dom'
+import './App.css'
+import Navbar from './components/Navbar.jsx'
+import Footer from './components/Footer.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Home from './pages/Home.jsx'
+import Courses from './pages/Courses.jsx'
+import CourseDetails from './pages/CourseDetails.jsx'
+import Login from './pages/Login.jsx'
+import Register from './pages/Register.jsx'
+import VerifyOTP from './pages/VerifyOTP.jsx'
+import Assignments from './pages/Assignments.jsx'
+import MyEnrollments from './pages/MyEnrollments.jsx'
+import Profile from './pages/Profile.jsx'
+import AdminDashboard from './admin/AdminDashboard.jsx'
+import ManageCourses from './admin/ManageCourses.jsx'
+import ManageUsers from './admin/ManageUsers.jsx'
+import ManageAssignments from './admin/ManageAssignments.jsx'
+
+function App() { return <div className="app-shell"><Navbar /><main className="main-content"><Routes><Route path="/" element={<Home />} /><Route path="/courses" element={<Courses />} /><Route path="/courses/:id" element={<CourseDetails />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /><Route path="/verify-otp" element={<VerifyOTP />} /><Route element={<ProtectedRoute />}><Route path="/assignments" element={<Assignments />} /><Route path="/enrollments" element={<MyEnrollments />} /><Route path="/profile" element={<Profile />} /></Route><Route element={<ProtectedRoute adminOnly />}><Route path="/admin" element={<AdminDashboard />} /><Route path="/admin/courses" element={<ManageCourses />} /><Route path="/admin/users" element={<ManageUsers />} /><Route path="/admin/assignments" element={<ManageAssignments />} /></Route><Route path="*" element={<Navigate to="/" replace />} /></Routes></main><Footer /></div> }
+export default App

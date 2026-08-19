@@ -12,6 +12,7 @@ const {
 const authMiddleware = require("../middleware/auth.middleware");
 
 const roleMiddleware = require("../middleware/role.middleware");
+const { validateObjectId } = require("../middleware/validation.middleware");
 
 
 
@@ -36,6 +37,7 @@ router.delete(
     "/delete-user/:id",
     authMiddleware,
     roleMiddleware("admin"),
+    validateObjectId(),
     deleteUser
 );
 

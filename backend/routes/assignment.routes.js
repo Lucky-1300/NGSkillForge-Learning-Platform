@@ -15,6 +15,7 @@ const authMiddleware = require("../middleware/auth.middleware");
 const roleMiddleware = require("../middleware/role.middleware");
 
 const upload = require("../middleware/upload.middleware");
+const { validateObjectId, validateAssignment } = require("../middleware/validation.middleware");
 
 
 
@@ -23,6 +24,7 @@ router.post(
     authMiddleware,
     roleMiddleware("admin"),
     upload.single("file"),
+    validateAssignment,
     uploadAssignment
 );
 
@@ -39,6 +41,7 @@ router.get(
 router.get(
     "/single-assignment/:id",
     authMiddleware,
+    validateObjectId(),
     getSingleAssignment
 );
 
@@ -48,6 +51,7 @@ router.delete(
     "/delete-assignment/:id",
     authMiddleware,
     roleMiddleware("admin"),
+    validateObjectId(),
     deleteAssignment
 );
 

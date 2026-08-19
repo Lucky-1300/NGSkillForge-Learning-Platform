@@ -1,15 +1,17 @@
 // This file configures file uploads using Multer.
 const multer = require("multer");
+const path = require("path");
+const crypto = require("crypto");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/");
+        cb(null, path.join(__dirname, "..", "uploads"));
     },
 
     filename: (req, file, cb) => {
         cb(
             null,
-            Date.now() + "-" + file.originalname
+            `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${path.extname(file.originalname).toLowerCase()}`
         );
     },
 });
@@ -29,10 +31,9 @@ const fileFilter = (req, file, cb) => {
     if (allowedFileTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(
-            new Error("Invalid file type"),
-            false
-        );
+        const error = new Error("Invalid file type");
+        error.status = 400;
+        cb(error, false);
     }
 
 };

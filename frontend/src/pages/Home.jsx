@@ -6,13 +6,195 @@ import CourseCard from '../components/CourseCard.jsx'
 import Loader from '../components/Loader.jsx'
 
 export default function Home() {
-	const [courses, setCourses] = useState([]); const [loading, setLoading] = useState(true); const [error, setError] = useState('')
-	useEffect(() => { api.get('/courses/all-courses?limit=3').then(({ data }) => setCourses(data.courses || [])).catch((err) => setError(messageFrom(err))).finally(() => setLoading(false)) }, [])
-	return <>
-		<section className="product-hero"><div className="container product-hero-grid"><div className="product-hero-copy"><span className="hero-badge"><FiCode /> Learning platform</span><h1>Build skills.<br /><span>Create projects.</span><br />Grow your career.</h1><p>Learn through focused courses, hands-on assignments, and practical projects designed to turn knowledge into real skills.</p><div className="hero-actions"><Link className="btn btn-primary" to="/courses">Explore courses <FiArrowRight /></Link><Link className="btn btn-secondary" to="/enrollments">View my learning</Link></div></div><div className="learning-preview"><div className="preview-top"><span>MY LEARNING</span><span className="preview-live"><i /> Active path</span></div><div className="preview-course"><span className="preview-icon"><FiLayers /></span><div><small>Current course</small><h3>Full Stack Web Development</h3><span className="muted">Module 6 of 9</span></div></div><div className="preview-progress"><div><span>Progress</span><strong>68%</strong></div><div className="progress-track"><span /></div></div><div className="preview-next"><span className="preview-next-icon"><FiCheckCircle /></span><div><small>Next assignment</small><strong>Build REST API</strong></div><FiArrowRight /></div><div className="preview-float preview-float-one"><strong>12</strong><span>Courses</span></div><div className="preview-float preview-float-two"><strong>8</strong><span>Assignments</span></div></div></div></section>
-		<section className="overview-section"><div className="container"><div className="section-heading compact-heading"><span className="eyebrow">Learning overview</span><h2>Your progress, at a glance.</h2></div><div className="overview-grid"><Overview icon={<FiBookOpen />} number="12" label="Courses enrolled" detail="Across 4 learning paths" /><Overview icon={<FiCheckCircle />} number="8" label="Assignments completed" detail="Keep the momentum going" /><Overview icon={<FiLayers />} number="3" label="Projects built" detail="Real work for your portfolio" /><Overview icon={<FiTrendingUp />} number="68%" label="Learning progress" detail="Up 12% this month" /></div></div></section>
-		<section className="section courses-home-section"><div className="container"><div className="split-heading"><div><span className="eyebrow">Start somewhere useful</span><h2>Explore courses</h2><p className="muted">Build practical skills through structured learning paths.</p></div><Link className="text-action" to="/courses">View all courses <FiArrowRight /></Link></div>{loading ? <Loader label="Loading courses..." /> : error ? <div className="status error">{error}</div> : courses.length ? <div className="course-grid">{courses.map((course) => <CourseCard key={course._id} course={course} />)}</div> : <div className="empty-state">Courses will appear here once they are published.</div>}</div></section>
-		<section className="continue-section"><div className="container continue-panel"><div><span className="eyebrow">Keep moving forward</span><h2>Learning works best when you put it to work.</h2><p>Choose a course, complete the practice, and build something you can be proud of.</p></div><div className="continue-actions"><Link className="btn btn-primary" to="/courses">Browse the catalog <FiArrowRight /></Link><Link className="text-action" to="/assignments">Visit practice library <FiArrowRight /></Link></div></div></section>
-	</>
+  const [courses, setCourses] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    api
+      .get('/courses/all-courses?limit=3')
+      .then(({ data }) => setCourses(data.courses || []))
+      .catch((err) => setError(messageFrom(err)))
+      .finally(() => setLoading(false))
+  }, [])
+
+  return (
+    <>
+      <section className="product-hero">
+        <div className="container product-hero-grid">
+          <div className="product-hero-copy">
+            <span className="hero-badge">
+              <FiCode /> Learning platform
+            </span>
+            <h1>
+              Build skills.
+              <br />
+              <span>Create projects.</span>
+              <br />
+              Grow your career.
+            </h1>
+            <p>
+              Learn through focused courses, hands-on assignments, and practical
+              projects designed to turn knowledge into real skills.
+            </p>
+            <div className="hero-actions">
+              <Link className="btn btn-primary" to="/courses">
+                Explore courses <FiArrowRight />
+              </Link>
+              <Link className="btn btn-secondary" to="/enrollments">
+                View my learning
+              </Link>
+            </div>
+          </div>
+
+          <div className="learning-preview">
+            <div className="preview-top">
+              <span>MY LEARNING</span>
+              <span className="preview-live">
+                <i /> Active path
+              </span>
+            </div>
+            <div className="preview-course">
+              <span className="preview-icon">
+                <FiLayers />
+              </span>
+              <div>
+                <small>Current course</small>
+                <h3>Full Stack Web Development</h3>
+                <span className="muted">Module 6 of 9</span>
+              </div>
+            </div>
+            <div className="preview-progress">
+              <div>
+                <span>Progress</span>
+                <strong>68%</strong>
+              </div>
+              <div className="progress-track">
+                <span />
+              </div>
+            </div>
+            <div className="preview-next">
+              <span className="preview-next-icon">
+                <FiCheckCircle />
+              </span>
+              <div>
+                <small>Next assignment</small>
+                <strong>Build REST API</strong>
+              </div>
+              <FiArrowRight />
+            </div>
+            <div className="preview-float preview-float-one">
+              <strong>12</strong>
+              <span>Courses</span>
+            </div>
+            <div className="preview-float preview-float-two">
+              <strong>8</strong>
+              <span>Assignments</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="overview-section">
+        <div className="container">
+          <div className="section-heading compact-heading">
+            <span className="eyebrow">Learning overview</span>
+            <h2>Your progress, at a glance.</h2>
+          </div>
+          <div className="overview-grid">
+            <Overview
+              icon={<FiBookOpen />}
+              number="12"
+              label="Courses enrolled"
+              detail="Across 4 learning paths"
+            />
+            <Overview
+              icon={<FiCheckCircle />}
+              number="8"
+              label="Assignments completed"
+              detail="Keep the momentum going"
+            />
+            <Overview
+              icon={<FiLayers />}
+              number="3"
+              label="Projects built"
+              detail="Real work for your portfolio"
+            />
+            <Overview
+              icon={<FiTrendingUp />}
+              number="68%"
+              label="Learning progress"
+              detail="Up 12% this month"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="section courses-home-section">
+        <div className="container">
+          <div className="split-heading">
+            <div>
+              <span className="eyebrow">Start somewhere useful</span>
+              <h2>Explore courses</h2>
+              <p className="muted">
+                Build practical skills through structured learning paths.
+              </p>
+            </div>
+            <Link className="text-action" to="/courses">
+              View all courses <FiArrowRight />
+            </Link>
+          </div>
+          {loading ? (
+            <Loader label="Loading courses..." />
+          ) : error ? (
+            <div className="status error">{error}</div>
+          ) : courses.length ? (
+            <div className="course-grid">
+              {courses.map((course) => (
+                <CourseCard key={course._id} course={course} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              Courses will appear here once they are published.
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="continue-section">
+        <div className="container continue-panel">
+          <div>
+            <span className="eyebrow">Keep moving forward</span>
+            <h2>Learning works best when you put it to work.</h2>
+            <p>
+              Choose a course, complete the practice, and build something you can
+              be proud of.
+            </p>
+          </div>
+          <div className="continue-actions">
+            <Link className="btn btn-primary" to="/courses">
+              Browse the catalog <FiArrowRight />
+            </Link>
+            <Link className="text-action" to="/assignments">
+              Visit practice library <FiArrowRight />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
+  )
 }
-function Overview({ icon, number, label, detail }) { return <div className="overview-card"><span className="overview-icon">{icon}</span><div><strong>{number}</strong><h3>{label}</h3><p>{detail}</p></div></div> }
+
+function Overview({ icon, number, label, detail }) {
+  return (
+    <div className="overview-card">
+      <span className="overview-icon">{icon}</span>
+      <div>
+        <strong>{number}</strong>
+        <h3>{label}</h3>
+        <p>{detail}</p>
+      </div>
+    </div>
+  )
+}

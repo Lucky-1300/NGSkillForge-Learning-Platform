@@ -3,4 +3,116 @@ import { Link } from 'react-router-dom'
 import { FiArrowRight, FiBookOpen, FiCheckCircle, FiLock, FiSettings, FiUser } from 'react-icons/fi'
 import api, { messageFrom } from '../services/api.js'
 import Loader from '../components/Loader.jsx'
-export default function Profile() { const [user, setUser] = useState(null); const [error, setError] = useState(''); useEffect(() => { api.get('/users/profile').then(({ data }) => setUser(data.user)).catch((err) => setError(messageFrom(err))) }, []); return <section className="profile-section"><div className="container">{!user && !error ? <Loader /> : error ? <div className="profile-access" role="alert"><span className="profile-access-icon"><FiLock /></span><h1>Authentication required</h1><p>Your session has expired or you are not authenticated.</p><Link className="btn btn-primary" to="/login">Go to login <FiArrowRight /></Link><small>{error}</small></div> : <><div className="profile-heading"><div><span className="eyebrow">Account dashboard</span><h1>Profile</h1><p className="muted">Manage your account and keep track of your learning identity.</p></div><span className="profile-status"><i /> Active learner</span></div><div className="profile-grid"><div className="profile-card profile-identity"><span className="profile-avatar"><FiUser /></span><div><h2>{user.name}</h2><p>{user.email}</p><span className="profile-role">{user.role}</span></div></div><div className="profile-card"><span className="profile-card-icon"><FiBookOpen /></span><span className="profile-stat-label">Courses enrolled</span><strong>12</strong><p>Keep exploring new paths</p></div><div className="profile-card"><span className="profile-card-icon success"><FiCheckCircle /></span><span className="profile-stat-label">Assignments completed</span><strong>8</strong><p>Practical work completed</p></div></div><div className="profile-lower"><div className="profile-card profile-details"><div className="profile-card-heading"><h2>Personal information</h2><FiSettings /></div><div className="profile-fields"><span>Name<strong>{user.name}</strong></span><span>Email<strong>{user.email}</strong></span><span>Account role<strong>{user.role}</strong></span></div></div><div className="profile-card profile-progress-card"><h2>Learning progress</h2><div className="profile-progress-number"><strong>68%</strong><span>Overall progress</span></div><span className="progress-track"><span /></span><p>You're building a steady learning habit.</p></div></div></>}</div></section> }
+
+export default function Profile() {
+  const [user, setUser] = useState(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    api
+      .get('/users/profile')
+      .then(({ data }) => setUser(data.user))
+      .catch((err) => setError(messageFrom(err)))
+  }, [])
+
+  return (
+    <section className="profile-section">
+      <div className="container">
+        {!user && !error ? (
+          <Loader />
+        ) : error ? (
+          <div className="profile-access" role="alert">
+            <span className="profile-access-icon">
+              <FiLock />
+            </span>
+            <h1>Authentication required</h1>
+            <p>Your session has expired or you are not authenticated.</p>
+            <Link className="btn btn-primary" to="/login">
+              Go to login <FiArrowRight />
+            </Link>
+            <small>{error}</small>
+          </div>
+        ) : (
+          <>
+            <div className="profile-heading">
+              <div>
+                <span className="eyebrow">Account dashboard</span>
+                <h1>Profile</h1>
+                <p className="muted">
+                  Manage your account and keep track of your learning identity.
+                </p>
+              </div>
+              <span className="profile-status">
+                <i /> Active learner
+              </span>
+            </div>
+
+            <div className="profile-grid">
+              <div className="profile-card profile-identity">
+                <span className="profile-avatar">
+                  <FiUser />
+                </span>
+                <div>
+                  <h2>{user.name}</h2>
+                  <p>{user.email}</p>
+                  <span className="profile-role">{user.role}</span>
+                </div>
+              </div>
+              <div className="profile-card">
+                <span className="profile-card-icon">
+                  <FiBookOpen />
+                </span>
+                <span className="profile-stat-label">Courses enrolled</span>
+                <strong>12</strong>
+                <p>Keep exploring new paths</p>
+              </div>
+              <div className="profile-card">
+                <span className="profile-card-icon success">
+                  <FiCheckCircle />
+                </span>
+                <span className="profile-stat-label">Assignments completed</span>
+                <strong>8</strong>
+                <p>Practical work completed</p>
+              </div>
+            </div>
+
+            <div className="profile-lower">
+              <div className="profile-card profile-details">
+                <div className="profile-card-heading">
+                  <h2>Personal information</h2>
+                  <FiSettings />
+                </div>
+                <div className="profile-fields">
+                  <span>
+                    Name
+                    <strong>{user.name}</strong>
+                  </span>
+                  <span>
+                    Email
+                    <strong>{user.email}</strong>
+                  </span>
+                  <span>
+                    Account role
+                    <strong>{user.role}</strong>
+                  </span>
+                </div>
+              </div>
+
+              <div className="profile-card profile-progress-card">
+                <h2>Learning progress</h2>
+                <div className="profile-progress-number">
+                  <strong>68%</strong>
+                  <span>Overall progress</span>
+                </div>
+                <span className="progress-track">
+                  <span />
+                </span>
+                <p>You're building a steady learning habit.</p>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  )
+}

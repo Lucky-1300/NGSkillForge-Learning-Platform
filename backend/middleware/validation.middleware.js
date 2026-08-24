@@ -4,6 +4,67 @@ const fail = (res, message) => res.status(400).json({ success: false, message })
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const isId = (value) => mongoose.Types.ObjectId.isValid(value);
 const requiredString = (value, max = 500) => typeof value === "string" && value.trim().length > 0 && value.trim().length <= max;
+const validLessonTypes = ["video", "text", "link", "file"];
+
+const validateModules = (modules) => {
+    if (modules === undefined) return null;
+    if (!Array.isArray(modules)) return "Modules must be an array";
+
+    for (let moduleIndex = 0; moduleIndex < modules.length; moduleIndex += 1) {
+        const moduleItem = modules[moduleIndex];
+
+        if (!moduleItem || typeof moduleItem !== "object" || Array.isArray(moduleItem)) {
+            return `Module at index ${moduleIndex} must be an object`;
+        }
+
+        if (!requiredString(moduleItem.title, 200)) {
+            return `Module at index ${moduleIndex} must have a valid title`;
+        }
+
+        if (!Number.isInteger(moduleItem.order) || moduleItem.order < 1) {
+            return `Module at index ${moduleIndex} must have a valid order`;
+        }
+
+        if (moduleItem.lessons !== undefined && !Array.isArray(moduleItem.lessons)) {
+            return `Lessons in module index ${moduleIndex} must be an array`;
+        }
+
+        const lessons = moduleItem.lessons || [];
+        for (let lessonIndex = 0; lessonIndex < lessons.length; lessonIndex += 1) {
+            const lessonItem = lessons[lessonIndex];
+
+            if (!lessonItem || typeof lessonItem !== "object" || Array.isArray(lessonItem)) {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} must be an object`;
+            }
+
+            if (!requiredString(lessonItem.title, 200)) {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} must have a valid title`;
+            }
+
+            if (!validLessonTypes.includes(lessonItem.type)) {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} has an invalid type`;
+            }
+
+            if (!requiredString(lessonItem.content, 10000)) {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} must have valid content`;
+            }
+
+            if (lessonItem.notes !== undefined && !requiredString(lessonItem.notes, 10000) && lessonItem.notes !== "") {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} has invalid notes`;
+            }
+
+            if (lessonItem.duration !== undefined && !requiredString(lessonItem.duration, 100) && lessonItem.duration !== "") {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} has invalid duration`;
+            }
+
+            if (!Number.isInteger(lessonItem.order) || lessonItem.order < 1) {
+                return `Lesson at module ${moduleIndex}, lesson ${lessonIndex} must have a valid order`;
+            }
+        }
+    }
+
+    return null;
+};
 
 const validateRegister = (req, res, next) => {
     const { name, email, password } = req.body || {};
@@ -56,15 +117,17 @@ const validateCourseQuery = (req, res, next) => {
 };
 
 const validateCourse = (req, res, next) => {
-    const { title, description, instructor, price, category, level, duration } = req.body || {};
+    const { title, description, instructor, price, category, level, duration, modules } = req.body || {};
     if (![title, description, instructor, category, duration].every((value) => requiredString(value))) return fail(res, "Title, description, instructor, category and duration are required");
     if (price === undefined || price === "" || !Number.isFinite(Number(price)) || Number(price) < 0) return fail(res, "Price must be a non-negative number");
     if (level && !["Beginner", "Intermediate", "Advanced"].includes(level)) return fail(res, "Invalid course level");
+    const modulesError = validateModules(modules);
+    if (modulesError) return fail(res, modulesError);
     next();
 };
 
 const validateCourseUpdate = (req, res, next) => {
-    const allowedFields = ["title", "description", "instructor", "price", "thumbnail", "category", "level", "duration"];
+    const allowedFields = ["title", "description", "instructor", "price", "thumbnail", "category", "level", "duration", "modules"];
     const fields = Object.keys(req.body || {});
     if (!fields.length || fields.some((field) => !allowedFields.includes(field))) return fail(res, "Provide valid course fields to update");
     if (req.body.title !== undefined && !requiredString(req.body.title, 200)) return fail(res, "Invalid course title");
@@ -74,6 +137,8 @@ const validateCourseUpdate = (req, res, next) => {
     if (req.body.duration !== undefined && !requiredString(req.body.duration, 100)) return fail(res, "Invalid duration");
     if (req.body.price !== undefined && (!Number.isFinite(Number(req.body.price)) || Number(req.body.price) < 0)) return fail(res, "Price must be a non-negative number");
     if (req.body.level !== undefined && !["Beginner", "Intermediate", "Advanced"].includes(req.body.level)) return fail(res, "Invalid course level");
+    const modulesError = validateModules(req.body.modules);
+    if (modulesError) return fail(res, modulesError);
     next();
 };
 

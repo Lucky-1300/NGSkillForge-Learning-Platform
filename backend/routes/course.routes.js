@@ -7,6 +7,7 @@ const {
     createCourse,
     getAllCourses,
     getSingleCourse,
+    getCourseContent,
     updateCourse,
     deleteCourse,
 } = require("../controllers/course.controller");
@@ -45,6 +46,14 @@ router.get(
     "/single-course/:id",
     validateObjectId(),
     getSingleCourse
+);
+
+
+router.get(
+    "/:id/content",
+    authMiddleware,
+    validateObjectId(),
+    getCourseContent
 );
 
 

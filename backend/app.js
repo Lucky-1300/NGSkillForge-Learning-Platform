@@ -70,6 +70,8 @@ app.use("/api/users", userRoutes);
 
 app.use("/api/courses", courseRoutes);
 
+app.use("/api/v1/courses", courseRoutes);
+
 app.use("/api/assignments", assignmentRoutes);
 
 app.use("/api/enrollments", enrollmentRoutes);

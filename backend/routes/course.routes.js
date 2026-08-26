@@ -8,6 +8,8 @@ const {
     getAllCourses,
     getSingleCourse,
     getCourseContent,
+    getSubtopicLesson,
+    getTopicDetails,
     updateCourse,
     deleteCourse,
 } = require("../controllers/course.controller");
@@ -46,6 +48,20 @@ router.get(
     "/single-course/:id",
     validateObjectId(),
     getSingleCourse
+);
+
+
+router.get(
+    "/:courseId/topics/:topicId",
+    authMiddleware,
+    getTopicDetails
+);
+
+
+router.get(
+    "/:courseId/topics/:topicId/subtopics/:subtopicId",
+    authMiddleware,
+    getSubtopicLesson
 );
 
 

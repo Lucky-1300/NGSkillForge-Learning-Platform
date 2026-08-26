@@ -1,0 +1,597 @@
+/* ==========================================================================
+   Topic Learning Hub Styles - TopicHub.css
+   ========================================================================== */
+
+.topic-hub-container {
+  min-height: calc(100vh - 80px);
+  background: var(--bg-alt);
+  color: var(--text-main);
+  padding-bottom: 80px;
+}
+
+/* 1. Header & Breadcrumbs */
+.topic-hub-hero {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--line);
+  padding: 36px 0 32px;
+}
+
+.topic-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.topic-breadcrumbs a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.topic-breadcrumbs a:hover {
+  color: var(--primary);
+}
+
+.topic-breadcrumbs .separator {
+  color: var(--line);
+  font-size: 12px;
+}
+
+.topic-breadcrumbs .current {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.topic-hub-header-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.topic-title-area {
+  max-width: 760px;
+}
+
+.topic-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.topic-title {
+  font-size: clamp(28px, 3.6vw, 38px);
+  font-weight: 800;
+  color: var(--text-heading);
+  line-height: 1.2;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.topic-desc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Overall Progress Card */
+.topic-progress-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: 18px 24px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+}
+
+.topic-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.topic-progress-badge {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: var(--font-heading);
+}
+
+.topic-progress-bar-lg {
+  width: 100%;
+  height: 8px;
+  background: var(--line);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.topic-progress-fill-lg {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #3b82f6);
+  border-radius: var(--radius-full);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.topic-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.topic-progress-stat strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text-heading);
+  font-weight: 700;
+}
+
+/* 2. Navigation Tabs */
+.topic-tabs-bar {
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.topic-tabs-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.topic-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.topic-tab-btn:hover {
+  color: var(--primary);
+}
+
+.topic-tab-btn.active {
+  color: var(--primary);
+  font-weight: 700;
+  border-bottom-color: var(--primary);
+}
+
+.tab-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+}
+
+.topic-tab-btn.active .tab-badge {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+/* 3. Tab Content Area */
+.topic-content-body {
+  padding-top: 36px;
+}
+
+/* Lessons Tab */
+.lessons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lesson-hub-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: var(--bg-white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.lesson-hub-card:hover {
+  border-color: var(--primary);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+}
+
+.lesson-card-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.lesson-number-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: grid;
+  placeItems: center;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  flex-shrink: 0;
+}
+
+.lesson-number-circle.completed {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.lesson-info h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0 0 4px 0;
+}
+
+.lesson-info p {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.lesson-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Questions Tab */
+.questions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.questions-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-white);
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.question-card {
+  background: var(--bg-white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: 22px 26px;
+  transition: all 0.2s ease;
+}
+
+.question-card.is-completed {
+  border-left: 4px solid #10b981;
+}
+
+.question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.question-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.question-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  color: var(--text-secondary);
+}
+
+.question-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0 0 14px 0;
+}
+
+.question-code-block {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  font-family: 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.question-answer-box {
+  margin-top: 14px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-heading);
+}
+
+.question-answer-box strong {
+  color: var(--primary);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14.5px;
+}
+
+.reveal-answer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  background: transparent;
+  border: 1px solid var(--primary-border);
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reveal-answer-btn:hover {
+  background: var(--primary-light);
+}
+
+.toggle-question-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+}
+
+.toggle-question-check.checked {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Tasks Tab */
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tasks-level-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.task-level-pill {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line);
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.task-level-pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.task-level-pill.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.task-card {
+  background: var(--bg-white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.task-card.is-solved {
+  border-left: 4px solid #10b981;
+}
+
+.task-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.task-level-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.task-card h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-heading);
+  margin: 6px 0 0 0;
+}
+
+.task-description {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.task-requirements-box {
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.task-requirements-box h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0 0 10px 0;
+}
+
+.task-req-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-req-list li {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.task-starter-code {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  font-family: 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  position: relative;
+}
+
+.task-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+/* Matrices / Interview Matrix */
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 28px;
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.matrix-table th,
+.matrix-table td {
+  padding: 12px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.matrix-table th {
+  background: var(--bg-alt);
+  font-weight: 700;
+  color: var(--text-heading);
+}
+
+.matrix-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .topic-hub-header-inner {
+    flex-direction: column;
+  }
+  .topic-progress-card {
+    width: 100%;
+  }
+  .lesson-hub-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .lesson-card-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

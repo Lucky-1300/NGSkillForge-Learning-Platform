@@ -1,4 +1,7 @@
 // This file connects the app to MongoDB using Mongoose.
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 const mongoose = require("mongoose");
 
 const connectDB = async () => {

@@ -42,7 +42,7 @@ export default function Courses() {
   useEffect(() => {
     const query = new URLSearchParams({
       page,
-      limit: 6,
+      limit: 20,
       ...(filters.search && { search: filters.search }),
       ...(filters.category && { category: filters.category }),
       ...(filters.level && { level: filters.level }),
@@ -83,23 +83,8 @@ export default function Courses() {
   }
 
   return (
-    <>
-      <header className="catalog-hero">
-        <div className="container catalog-hero-inner">
-          <div>
-            <span className="eyebrow">NGSkillForge learning catalog</span>
-            <h1>Explore Courses</h1>
-            <p>Build practical skills that move your career forward.</p>
-          </div>
-          <div className="catalog-hero-note">
-            <strong>{meta.totalCourses || 0}</strong>
-            <span>courses available</span>
-          </div>
-        </div>
-      </header>
-
-      <section className="courses-section">
-        <div className="container">
+    <section className="courses-section">
+      <div className="container">
           <CourseFilters
             {...filters}
             categories={categories}
@@ -145,6 +130,5 @@ export default function Courses() {
           )}
         </div>
       </section>
-    </>
   )
 }

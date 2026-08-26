@@ -3,18 +3,18 @@
    ========================================================================== */
 
 :root {
-  --primary: #2563eb;
-  --dark: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
   --lavender: #eff6ff;
-  --white: #ffffff;
+}
+
+[data-theme="dark"] {
+  --lavender: rgba(37, 99, 235, 0.15);
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f8fafc;
-  color: #0f172a;
+  background-color: var(--bg-alt);
+  color: var(--text-main);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 h1, h2, h3, h4, .brand {
@@ -27,13 +27,13 @@ h1, h2, h3, h4, .brand {
 
 /* Subtle micro-interactions */
 .btn-primary {
-  background: #2563eb;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
+  background: var(--primary);
+  box-shadow: 0 4px 14px var(--primary-shadow);
 }
 
 .btn-primary:hover {
-  background: #1d4ed8;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+  background: var(--primary-hover);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
 }
 
 .brand-mark {
@@ -41,10 +41,11 @@ h1, h2, h3, h4, .brand {
 }
 
 .course-card, .overview-card, .profile-card, .assignment-card {
-  border-color: #e2e8f0;
-  background: #ffffff;
+  border-color: var(--line);
+  background: var(--bg-white);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .course-card:hover, .overview-card:hover, .assignment-card:hover {
-  border-color: #bfdbfe;
+  border-color: var(--primary-border-hover);
 }

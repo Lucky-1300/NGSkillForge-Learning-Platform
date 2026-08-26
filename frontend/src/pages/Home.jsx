@@ -12,7 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     api
-      .get('/courses/all-courses?limit=3')
+      .get('/courses/all-courses?limit=6')
       .then(({ data }) => setCourses(data.courses || []))
       .catch((err) => setError(messageFrom(err)))
       .finally(() => setLoading(false))
@@ -82,14 +82,6 @@ export default function Home() {
                 <strong>Build REST API</strong>
               </div>
               <FiArrowRight />
-            </div>
-            <div className="preview-float preview-float-one">
-              <strong>12</strong>
-              <span>Courses</span>
-            </div>
-            <div className="preview-float preview-float-two">
-              <strong>8</strong>
-              <span>Assignments</span>
             </div>
           </div>
         </div>

@@ -3,20 +3,77 @@ import './App.css'
 import './theme.css'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Home from './pages/Home.jsx'
 import Courses from './pages/Courses.jsx'
 import CourseDetails from './pages/CourseDetails.jsx'
+import Lesson from './pages/Lesson.jsx'
+import TopicHub from './pages/TopicHub.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import VerifyOTP from './pages/VerifyOTP.jsx'
 import Assignments from './pages/Assignments.jsx'
 import MyEnrollments from './pages/MyEnrollments.jsx'
 import Profile from './pages/Profile.jsx'
+import About from './pages/About.jsx'
+import Contact from './pages/Contact.jsx'
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
+import Terms from './pages/Terms.jsx'
 import AdminDashboard from './admin/AdminDashboard.jsx'
 import ManageCourses from './admin/ManageCourses.jsx'
 import ManageUsers from './admin/ManageUsers.jsx'
 import ManageAssignments from './admin/ManageAssignments.jsx'
 
-function App() { return <div className="app-shell"><Navbar /><main className="main-content"><Routes><Route path="/" element={<Home />} /><Route path="/courses" element={<Courses />} /><Route path="/courses/:id" element={<CourseDetails />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /><Route path="/verify-otp" element={<VerifyOTP />} /><Route element={<ProtectedRoute />}><Route path="/assignments" element={<Assignments />} /><Route path="/enrollments" element={<MyEnrollments />} /><Route path="/profile" element={<Profile />} /></Route><Route element={<ProtectedRoute adminOnly />}><Route path="/admin" element={<AdminDashboard />} /><Route path="/admin/courses" element={<ManageCourses />} /><Route path="/admin/users" element={<ManageUsers />} /><Route path="/admin/assignments" element={<ManageAssignments />} /></Route><Route path="*" element={<Navigate to="/" replace />} /></Routes></main><Footer /></div> }
+function App() {
+  return (
+    <div className="app-shell">
+      <ScrollToTop />
+      <Navbar />
+      <main className="main-content">
+        <Routes>
+          {/* Public Platform Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetails />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+
+          {/* Company & Legal Pages */}
+          <Route path="/about" element={<About />} />
+          <Route path="/about-us" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/contact-us" element={<Contact />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/terms-of-service" element={<Terms />} />
+
+          {/* Protected Learner Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/courses/:courseId/topics/:topicId" element={<TopicHub />} />
+            <Route path="/courses/:courseId/topics/:topicId/subtopics/:subtopicId" element={<Lesson />} />
+            <Route path="/assignments" element={<Assignments />} />
+            <Route path="/enrollments" element={<MyEnrollments />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          {/* Protected Admin Routes */}
+          <Route element={<ProtectedRoute adminOnly />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/courses" element={<ManageCourses />} />
+            <Route path="/admin/users" element={<ManageUsers />} />
+            <Route path="/admin/assignments" element={<ManageAssignments />} />
+          </Route>
+
+          {/* Fallback Route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
 export default App

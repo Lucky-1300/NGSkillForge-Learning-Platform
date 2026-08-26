@@ -3,24 +3,12 @@
    ========================================================================== */
 
 .assignment-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  color: var(--white);
-  padding: 56px 0 48px;
-  border-bottom: 1px solid #1e293b;
+  background: var(--bg-white);
+  color: var(--text-main);
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--line);
   position: relative;
-  overflow: hidden;
-}
-
-.assignment-header::after {
-  content: '';
-  position: absolute;
-  top: -40%;
-  right: -10%;
-  width: 380px;
-  height: 380px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
-  pointer-events: none;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .assignment-header-inner {
@@ -33,38 +21,39 @@
 }
 
 .assignment-header .eyebrow {
-  color: #93c5fd;
+  color: var(--primary);
 }
 
 .assignment-header h1 {
-  color: var(--white);
-  font-size: clamp(36px, 4.8vw, 48px);
-  margin: 10px 0 8px;
+  color: var(--text-heading);
+  font-size: clamp(32px, 4.2vw, 44px);
+  margin: 8px 0 6px;
   font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .assignment-header p {
-  color: #cbd5e1;
-  font-size: 16px;
+  color: var(--muted);
+  font-size: 15.5px;
 }
 
 .assignment-header-mark {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 18px;
+  border: 1px solid var(--primary-border);
   border-radius: var(--radius-xl);
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
-  color: #bfdbfe;
+  background: var(--primary-light);
+  color: var(--primary);
   font-size: 13.5px;
   font-weight: 600;
+  box-shadow: var(--shadow-xs);
 }
 
 .assignment-header-mark svg {
-  font-size: 24px;
-  color: #60a5fa;
+  font-size: 20px;
+  color: var(--primary);
 }
 
 .assignment-section {

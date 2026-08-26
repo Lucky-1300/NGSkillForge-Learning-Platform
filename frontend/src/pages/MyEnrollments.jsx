@@ -20,10 +20,16 @@ export default function MyEnrollments() {
   return (
     <>
       <header className="learning-header">
-        <div className="container">
-          <span className="eyebrow">Your learning dashboard</span>
-          <h1>Continue learning</h1>
-          <p>Pick up where you left off and keep building useful skills.</p>
+        <div className="container learning-header-inner">
+          <div>
+            <span className="eyebrow">Your learning dashboard</span>
+            <h1>Continue learning</h1>
+            <p>Pick up where you left off and keep building useful skills.</p>
+          </div>
+          <div className="learning-header-mark">
+            <FiBookOpen />
+            <span>{items.length} {items.length === 1 ? 'Course' : 'Courses'} in progress</span>
+          </div>
         </div>
       </header>
       <section className="section learning-section">

@@ -1,5 +1,9 @@
 // Main server file that starts the app, loads routes, middleware, and connects to the database.
 require("dotenv").config();
+const dns = require("dns");
+
+// Use Google DNS servers to resolve MongoDB Atlas SRV records reliably
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const express = require("express");
 const mongoose = require("mongoose");

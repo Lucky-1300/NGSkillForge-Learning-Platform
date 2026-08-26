@@ -1,6 +1,45 @@
 // This file defines the course data saved in MongoDB.
 const mongoose = require("mongoose");
 
+const questionSchema = new mongoose.Schema(
+    {
+        id: { type: String, default: "" },
+        question: { type: String, required: true },
+        code: { type: String, default: "" },
+        type: {
+            type: String,
+            enum: ["output", "mcq", "conceptual", "interview"],
+            default: "output",
+        },
+        options: { type: [String], default: [] },
+        answer: { type: String, required: true },
+        explanation: { type: String, default: "" },
+        category: { type: String, default: "General" },
+        order: { type: Number, default: 1 },
+    },
+    {
+        _id: false,
+    }
+);
+
+const taskSchema = new mongoose.Schema(
+    {
+        id: { type: String, default: "" },
+        taskNumber: { type: Number, required: true },
+        title: { type: String, required: true },
+        level: { type: String, default: "Level 1" },
+        category: { type: String, default: "Variables" },
+        description: { type: String, required: true },
+        requirements: { type: [String], default: [] },
+        example: { type: String, default: "" },
+        hints: { type: [String], default: [] },
+        starterCode: { type: String, default: "" },
+    },
+    {
+        _id: false,
+    }
+);
+
 const lessonSchema = new mongoose.Schema(
     {
         title: {
@@ -18,13 +57,13 @@ const lessonSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
-            maxlength: 10000,
+            maxlength: 50000,
         },
         notes: {
             type: String,
             default: "",
             trim: true,
-            maxlength: 10000,
+            maxlength: 100000,
         },
         duration: {
             type: String,
@@ -36,6 +75,14 @@ const lessonSchema = new mongoose.Schema(
             type: Number,
             required: true,
             min: 1,
+        },
+        questions: {
+            type: [questionSchema],
+            default: [],
+        },
+        tasks: {
+            type: [taskSchema],
+            default: [],
         },
     },
     {
@@ -56,8 +103,26 @@ const moduleSchema = new mongoose.Schema(
             required: true,
             min: 1,
         },
+        description: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+        notesDocUrl: {
+            type: String,
+            default: "",
+            trim: true,
+        },
         lessons: {
             type: [lessonSchema],
+            default: [],
+        },
+        questions: {
+            type: [questionSchema],
+            default: [],
+        },
+        tasks: {
+            type: [taskSchema],
             default: [],
         },
     },
@@ -93,11 +158,18 @@ const courseSchema = new mongoose.Schema(
             type: Number,
             required: true,
             min: 0,
+            default: 0,
         },
 
         thumbnail: {
             type: String,
             default: "",
+        },
+
+        notesDocUrl: {
+            type: String,
+            default: "",
+            trim: true,
         },
 
         category: {
@@ -118,6 +190,11 @@ const courseSchema = new mongoose.Schema(
             required: true,
             trim: true,
             maxlength: 100,
+        },
+
+        order: {
+            type: Number,
+            default: 99,
         },
 
         modules: {

@@ -8,8 +8,9 @@ const empty = {
   title: '',
   description: '',
   instructor: '',
-  price: '',
+  price: '0',
   thumbnail: '',
+  notesDocUrl: '',
   category: '',
   level: 'Beginner',
   duration: '',
@@ -35,12 +36,13 @@ export default function ManageCourses() {
   const submit = async (e) => {
     e.preventDefault()
     try {
+      const payload = {
+        ...form,
+        price: Number(form.price) || 0,
+      }
       const data = editing
-        ? await api.put(`/courses/update-course/${editing}`, form)
-        : await api.post('/courses/create-course', {
-            ...form,
-            price: Number(form.price),
-          })
+        ? await api.put(`/courses/update-course/${editing}`, payload)
+        : await api.post('/courses/create-course', payload)
       toast.success(data.data.message)
       setForm(empty)
       setEditing(null)
@@ -59,6 +61,12 @@ export default function ManageCourses() {
     } catch (err) {
       toast.error(messageFrom(err))
     }
+  }
+
+  const getFieldLabel = (key) => {
+    if (key === 'notesDocUrl') return 'Google Doc / Cloud Notes URL'
+    if (key === 'thumbnail') return 'Thumbnail URL / Name'
+    return key[0].toUpperCase() + key.slice(1)
   }
 
   return (
@@ -90,7 +98,7 @@ export default function ManageCourses() {
                 className={`field ${key === 'description' ? 'full' : ''}`}
                 key={key}
               >
-                <label>{key[0].toUpperCase() + key.slice(1)}</label>
+                <label>{getFieldLabel(key)}</label>
                 {key === 'description' ? (
                   <textarea
                     required
@@ -101,8 +109,9 @@ export default function ManageCourses() {
                   />
                 ) : (
                   <input
-                    required={key !== 'thumbnail'}
+                    required={key !== 'thumbnail' && key !== 'notesDocUrl'}
                     type={key === 'price' ? 'number' : 'text'}
+                    placeholder={key === 'notesDocUrl' ? 'https://docs.google.com/document/d/.../edit' : ''}
                     value={form[key]}
                     onChange={(e) =>
                       setForm({ ...form, [key]: e.target.value })

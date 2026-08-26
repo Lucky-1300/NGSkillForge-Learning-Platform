@@ -17,27 +17,33 @@ const footerGroups = [
       ['Practice Library', '/assignments'],
       ['Projects', '/courses'],
       ['Learning Resources', '/courses'],
-      ['FAQs', '/courses'],
-      ['Help & Support', '/courses'],
+      ['FAQs', '/contact'],
+      ['Help & Support', '/contact'],
     ],
   },
   {
     title: 'Company',
     links: [
-      ['About NGSkillForge', '/'],
-      ['Contact', '/'],
-      ['Privacy Policy', '/'],
-      ['Terms', '/'],
+      ['About NGSkillForge', '/about'],
+      ['Contact', '/contact'],
+      ['Privacy Policy', '/privacy'],
+      ['Terms', '/terms'],
     ],
   },
 ]
 
 export default function Footer() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    document.body.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }
+
   return (
     <footer className="footer">
       <div className="container footer-main">
         <div className="footer-intro">
-          <Link className="brand footer-brand" to="/">
+          <Link className="brand footer-brand" to="/" onClick={scrollToTop}>
             <span className="brand-mark">
               <FiBookOpen />
             </span>
@@ -53,7 +59,7 @@ export default function Footer() {
             <div className="footer-group" key={group.title}>
               <h3>{group.title}</h3>
               {group.links.map(([label, path]) => (
-                <Link to={path} key={label}>
+                <Link to={path} key={label} onClick={scrollToTop}>
                   {label}
                 </Link>
               ))}

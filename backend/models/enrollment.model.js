@@ -14,6 +14,28 @@ const enrollmentSchema = new mongoose.Schema(
 			ref: "Course",
 			required: true,
 		},
+
+		completedLessons: {
+			type: [String],
+			default: [],
+		},
+
+		completedQuestions: {
+			type: [String],
+			default: [],
+		},
+
+		completedTasks: {
+			type: [String],
+			default: [],
+		},
+
+		progress: {
+			type: Number,
+			default: 0,
+			min: 0,
+			max: 100,
+		},
 	},
 	{
 		timestamps: true,

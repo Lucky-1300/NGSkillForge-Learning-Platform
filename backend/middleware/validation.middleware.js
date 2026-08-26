@@ -127,7 +127,7 @@ const validateCourse = (req, res, next) => {
 };
 
 const validateCourseUpdate = (req, res, next) => {
-    const allowedFields = ["title", "description", "instructor", "price", "thumbnail", "category", "level", "duration", "modules"];
+    const allowedFields = ["title", "description", "instructor", "price", "thumbnail", "notesDocUrl", "category", "level", "duration", "modules", "order"];
     const fields = Object.keys(req.body || {});
     if (!fields.length || fields.some((field) => !allowedFields.includes(field))) return fail(res, "Provide valid course fields to update");
     if (req.body.title !== undefined && !requiredString(req.body.title, 200)) return fail(res, "Invalid course title");

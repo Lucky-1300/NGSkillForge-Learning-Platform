@@ -6,6 +6,9 @@ const router = express.Router();
 const {
     enrollCourse,
     getMyEnrollments,
+    toggleLessonCompletion,
+    toggleQuestionCompletion,
+    toggleTaskCompletion,
 } = require("../controllers/enrollment.controller");
 
 const authMiddleware = require("../middleware/auth.middleware");
@@ -18,6 +21,30 @@ router.post(
     authMiddleware,
     validateEnrollment,
     enrollCourse
+);
+
+
+
+router.post(
+    "/complete-lesson",
+    authMiddleware,
+    toggleLessonCompletion
+);
+
+
+
+router.post(
+    "/complete-question",
+    authMiddleware,
+    toggleQuestionCompletion
+);
+
+
+
+router.post(
+    "/complete-task",
+    authMiddleware,
+    toggleTaskCompletion
 );
 
 

@@ -239,21 +239,22 @@ const getSubtopicLesson = async (req, res) => {
         // Check if user is enrolled or admin
         const isAdmin = req.user && req.user.role === "admin";
         let enrollment = null;
-        if (req.user) {
+        if (req.user && req.user.id) {
             enrollment = await Enrollment.findOne({
                 user: req.user.id,
                 course: course._id,
             });
         }
 
-        // If not enrolled and not admin, if course is free ($0), we can auto-enroll or require enrollment
+        // If not enrolled and not admin, if course is free ($0), auto-enroll when logged in, else require enrollment for paid courses
         if (!enrollment && !isAdmin) {
-            // Auto-enroll if free, else prompt enrollment
             if (!course.price || Number(course.price) === 0) {
-                enrollment = await Enrollment.create({
-                    user: req.user.id,
-                    course: course._id,
-                });
+                if (req.user && req.user.id) {
+                    enrollment = await Enrollment.create({
+                        user: req.user.id,
+                        course: course._id,
+                    });
+                }
             } else {
                 return res.status(403).json({
                     success: false,
@@ -453,7 +454,7 @@ const getTopicDetails = async (req, res) => {
         // Enrollment check / auto-enroll if free
         const isAdmin = req.user && req.user.role === "admin";
         let enrollment = null;
-        if (req.user) {
+        if (req.user && req.user.id) {
             enrollment = await Enrollment.findOne({
                 user: req.user.id,
                 course: course._id,
@@ -462,10 +463,12 @@ const getTopicDetails = async (req, res) => {
 
         if (!enrollment && !isAdmin) {
             if (!course.price || Number(course.price) === 0) {
-                enrollment = await Enrollment.create({
-                    user: req.user.id,
-                    course: course._id,
-                });
+                if (req.user && req.user.id) {
+                    enrollment = await Enrollment.create({
+                        user: req.user.id,
+                        course: course._id,
+                    });
+                }
             } else {
                 return res.status(403).json({
                     success: false,

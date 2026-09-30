@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
 import { FiBookOpen, FiMenu, FiX, FiLogOut, FiUser } from 'react-icons/fi'
 import { useAuth } from '../context/authContext.js'
 import ThemeToggle from './ThemeToggle.jsx'
+import GlobalSearchBox from './GlobalSearchBox.jsx'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -45,6 +46,11 @@ export default function Navbar() {
             <span className="brand-name">NGSkillForge</span>
           </Link>
 
+          {/* Desktop Global Search Box */}
+          <div className="navbar-search-desktop" style={{ margin: '0 1rem', flex: '0 1 280px' }}>
+            <GlobalSearchBox />
+          </div>
+
           <nav className="nav-links">
             <NavLink to="/" onClick={close} end>
               Home
@@ -54,6 +60,9 @@ export default function Navbar() {
             </NavLink>
             {isAuthenticated && (
               <>
+                <NavLink to="/dashboard" onClick={close}>
+                  Dashboard
+                </NavLink>
                 <NavLink to="/enrollments" onClick={close}>
                   My learning
                 </NavLink>

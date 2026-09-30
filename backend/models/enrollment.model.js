@@ -36,10 +36,33 @@ const enrollmentSchema = new mongoose.Schema(
 			min: 0,
 			max: 100,
 		},
+
+		courseCompleted: {
+			type: Boolean,
+			default: false,
+			index: true,
+		},
+
+		completedAt: {
+			type: Date,
+			default: null,
+		},
+
+		assessmentPassed: {
+			type: Boolean,
+			default: false,
+		},
+
+		bestAssessmentScore: {
+			type: Number,
+			default: 0,
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
+
+enrollmentSchema.index({ user: 1, course: 1 }, { unique: true });
 
 module.exports = mongoose.model("Enrollment", enrollmentSchema);

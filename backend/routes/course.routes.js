@@ -13,8 +13,9 @@ const {
     updateCourse,
     deleteCourse,
 } = require("../controllers/course.controller");
+const { getCourseCompletionStatus } = require("../controllers/assessment.controller");
 
-const authMiddleware = require("../middleware/auth.middleware");
+const { authMiddleware, optionalAuthMiddleware } = require("../middleware/auth.middleware");
 
 const roleMiddleware = require("../middleware/role.middleware");
 const {
@@ -53,14 +54,20 @@ router.get(
 
 router.get(
     "/:courseId/topics/:topicId",
-    authMiddleware,
+    optionalAuthMiddleware,
     getTopicDetails
+);
+
+router.get(
+    "/:courseId/completion",
+    optionalAuthMiddleware,
+    getCourseCompletionStatus
 );
 
 
 router.get(
     "/:courseId/topics/:topicId/subtopics/:subtopicId",
-    authMiddleware,
+    optionalAuthMiddleware,
     getSubtopicLesson
 );
 

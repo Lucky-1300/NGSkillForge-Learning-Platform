@@ -5,7 +5,7 @@
 .catalog-hero {
   background: var(--bg-white);
   color: var(--text-main);
-  padding: 48px 0 40px;
+  padding: 24px 0 20px;
   border-bottom: 1px solid var(--line);
   position: relative;
   transition: background-color 0.25s ease, border-color 0.25s ease;
@@ -15,7 +15,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 28px;
+  gap: 20px;
   position: relative;
   z-index: 2;
 }
@@ -26,25 +26,25 @@
 
 .catalog-hero h1 {
   color: var(--text-heading);
-  font-size: clamp(26px, 3.4vw, 36px);
+  font-size: clamp(20px, 2.8vw, 26px);
   line-height: 1.15;
-  margin: 6px 0 5px;
+  margin: 4px 0 3px;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
 
 .catalog-hero p {
   color: var(--muted);
-  font-size: 14px;
-  max-width: 480px;
+  font-size: 12.5px;
+  max-width: 440px;
 }
 
 .catalog-hero-note {
   display: grid;
-  min-width: 140px;
-  padding: 10px 16px;
+  min-width: 110px;
+  padding: 6px 12px;
   border: 1px solid var(--primary-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background: var(--primary-light);
   text-align: right;
   box-shadow: var(--shadow-xs);
@@ -52,7 +52,7 @@
 
 .catalog-hero-note strong {
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--primary);
   line-height: 1;
@@ -60,26 +60,26 @@
 
 .catalog-hero-note span {
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .courses-section {
-  padding: 48px 0 80px;
+  padding: 24px 0 40px;
 }
 
 /* Course Filters Bar */
 .course-filters {
   display: grid;
-  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(140px, 0.8fr)) auto;
-  gap: 12px;
-  padding: 14px 16px;
+  grid-template-columns: 1fr minmax(180px, 220px);
+  gap: 10px;
+  padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   background: var(--white);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 24px;
+  box-shadow: var(--shadow-xs);
+  margin-bottom: 16px;
 }
 
 .course-search {
@@ -89,20 +89,20 @@
 .course-search svg {
   position: absolute;
   top: 50%;
-  left: 14px;
+  left: 12px;
   transform: translateY(-50%);
   color: var(--muted);
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .course-search .search-box {
-  padding-left: 42px;
-  height: 44px;
+  padding-left: 36px;
+  height: 38px;
   background: var(--bg-alt);
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--dark);
-  font-size: 14px;
+  font-size: 13px;
   transition: all 0.2s ease;
 }
 
@@ -114,13 +114,13 @@
 
 .course-filters select {
   min-width: 0;
-  height: 44px;
+  height: 38px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
   color: var(--dark);
   background: var(--bg-alt);
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 500;
   outline: none;
   cursor: pointer;
@@ -137,15 +137,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 16px;
-  height: 44px;
+  gap: 5px;
+  padding: 0 12px;
+  height: 38px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   color: var(--muted);
   background: var(--white);
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -161,33 +161,33 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  min-height: 56px;
-  margin-bottom: 12px;
+  gap: 14px;
+  min-height: 36px;
+  margin-bottom: 8px;
 }
 
 .results-row p {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 600;
 }
 
 .pagination.compact {
   margin: 0;
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 
 .pagination.compact button {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 10px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--white);
   color: var(--dark);
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -205,7 +205,7 @@
   background: var(--primary);
   border-color: var(--primary);
   color: var(--white);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 1px 6px rgba(37, 99, 235, 0.25);
 }
 
 /* Empty & Error States */
@@ -278,14 +278,14 @@
 }
 
 .skeleton-visual {
-  height: 190px;
+  height: 135px;
   background: #eff6ff;
 }
 
 .skeleton-body {
   display: grid;
-  gap: 14px;
-  padding: 22px;
+  gap: 10px;
+  padding: 14px 15px;
 }
 
 .skeleton-line {
@@ -313,15 +313,9 @@
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .course-filters {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .course-search {
-    grid-column: 1 / -1;
-  }
-  .filter-clear {
-    height: 44px;
+    grid-template-columns: 1fr;
   }
 }
 

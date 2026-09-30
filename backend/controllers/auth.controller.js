@@ -293,7 +293,7 @@ const loginUser = async (req, res) => {
         const effectiveRole =
             normalizedEmail === PRIMARY_ADMIN_EMAIL
                 ? "admin"
-                : user.role;
+                : "user";
 
         if (user.role !== effectiveRole) {
             user.role = effectiveRole;
@@ -369,13 +369,29 @@ const refreshToken = async (req, res) => {
             process.env.JWT_SECRET
         );
 
+        const user = await User.findById(decoded.id).select("email role");
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found",
+            });
+        }
 
+        const effectiveRole =
+            normalizeEmail(user.email) === PRIMARY_ADMIN_EMAIL
+                ? "admin"
+                : "user";
+
+        if (user.role !== effectiveRole) {
+            user.role = effectiveRole;
+            await user.save();
+        }
 
         // Create a fresh access token without making the user log in again.
         const accessToken = jwt.sign(
             {
-                id: decoded.id,
-                role: decoded.role,
+                id: user._id,
+                role: effectiveRole,
             },
             process.env.JWT_SECRET,
             {

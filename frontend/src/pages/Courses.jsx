@@ -7,7 +7,7 @@ import ErrorState from '../components/ErrorState.jsx'
 import LoadingSkeleton from '../components/LoadingSkeleton.jsx'
 import './Courses.css'
 
-const initialFilters = { search: '', category: '', level: '', sort: 'relevance' }
+const initialFilters = { search: '', category: '' }
 
 export default function Courses() {
   const [courses, setCourses] = useState([])
@@ -23,17 +23,6 @@ export default function Courses() {
     [courses]
   )
 
-  const visibleCourses = useMemo(() => {
-    const result = [...courses]
-    if (filters.sort === 'title-asc')
-      result.sort((a, b) => a.title.localeCompare(b.title))
-    if (filters.sort === 'price-low')
-      result.sort((a, b) => Number(a.price) - Number(b.price))
-    if (filters.sort === 'price-high')
-      result.sort((a, b) => Number(b.price) - Number(a.price))
-    return result
-  }, [courses, filters.sort])
-
   const retryCourses = () => {
     setState({ loading: true, error: '' })
     setRetryKey((current) => current + 1)
@@ -45,7 +34,6 @@ export default function Courses() {
       limit: 20,
       ...(filters.search && { search: filters.search }),
       ...(filters.category && { category: filters.category }),
-      ...(filters.level && { level: filters.level }),
     })
     let cancelled = false
     api
@@ -68,7 +56,7 @@ export default function Courses() {
     return () => {
       cancelled = true
     }
-  }, [page, filters.search, filters.category, filters.level, retryKey])
+  }, [page, filters.search, filters.category, retryKey])
 
   const updateFilter = (key, value) => {
     setState({ loading: true, error: '' })
@@ -76,20 +64,14 @@ export default function Courses() {
     setFilters((current) => ({ ...current, [key]: value }))
   }
 
-  const clearFilters = () => {
-    setState({ loading: true, error: '' })
-    setPage(1)
-    setFilters(initialFilters)
-  }
-
   return (
     <section className="courses-section">
       <div className="container">
           <CourseFilters
-            {...filters}
+            search={filters.search}
+            category={filters.category}
             categories={categories}
             onChange={updateFilter}
-            onClear={clearFilters}
           />
           <div className="results-row">
             <p className="muted">
@@ -119,14 +101,14 @@ export default function Courses() {
             <LoadingSkeleton />
           ) : state.error ? (
             <ErrorState detail={state.error} onRetry={retryCourses} />
-          ) : visibleCourses.length ? (
+          ) : courses.length ? (
             <div className="course-grid">
-              {visibleCourses.map((course) => (
+              {courses.map((course) => (
                 <CourseCard key={course._id} course={course} />
               ))}
             </div>
           ) : (
-            <EmptyState onClear={clearFilters} />
+            <EmptyState onClear={() => setFilters(initialFilters)} />
           )}
         </div>
       </section>

@@ -9,14 +9,18 @@ export const ThemeContext = createContext({
 
 export const useTheme = () => useContext(ThemeContext)
 
-const THEME_STORAGE_KEY = 'ngskillforge_theme'
+const THEME_STORAGE_KEY = 'ngskillforge-theme'
 
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState(() => {
     // 1. Check stored preference
-    const saved = localStorage.getItem(THEME_STORAGE_KEY)
-    if (saved === 'dark' || saved === 'light') {
-      return saved
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem('ngskillforge_theme')
+      if (saved === 'dark' || saved === 'light') {
+        return saved
+      }
+    } catch {
+      // Ignore storage read error
     }
     // 2. Check system preference
     if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {

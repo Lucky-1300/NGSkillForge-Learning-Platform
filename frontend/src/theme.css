@@ -1,51 +1,184 @@
 /* ==========================================================================
-   NGSkillForge Theme Tokens & Polished SaaS Theme Extensions
+   NGSkillForge Semantic Theme System & Global Component Bindings
+   Dual Theme: Dark (Deep Navy / Near-Black + Blue) & Light (White + Orange)
    ========================================================================== */
 
-:root {
-  --lavender: #eff6ff;
-}
-
-[data-theme="dark"] {
-  --lavender: rgba(37, 99, 235, 0.15);
-}
-
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body);
   background-color: var(--bg-alt);
   color: var(--text-main);
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-h1, h2, h3, h4, .brand {
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+h1, h2, h3, h4, h5, h6, .brand {
+  font-family: var(--font-heading);
 }
 
 .container {
   width: min(1200px, calc(100% - 48px));
 }
 
-/* Subtle micro-interactions */
+/* Primary Button Theming */
 .btn-primary {
   background: var(--primary);
+  color: #ffffff;
   box-shadow: 0 4px 14px var(--primary-shadow);
 }
 
 .btn-primary:hover {
   background: var(--primary-hover);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 6px 20px var(--primary-shadow);
+  color: #ffffff;
 }
 
-.brand-mark {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-heading);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
 }
 
-.course-card, .overview-card, .profile-card, .assignment-card {
-  border-color: var(--line);
-  background: var(--bg-white);
+.btn-secondary:hover {
+  background: var(--bg-elevated);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: var(--bg-card);
+  color: var(--text-heading);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-outline:hover {
+  background: var(--bg-elevated);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* Dedicated Navigation & Back Buttons */
+.nav-back-btn,
+.sidebar-back-link,
+.learn-back-link,
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-heading);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.nav-back-btn:hover,
+.sidebar-back-link:hover,
+.learn-back-link:hover,
+.btn-back:hover {
+  background: var(--bg-elevated);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateX(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Card Foundations */
+.course-card,
+.overview-card,
+.profile-card,
+.assignment-card,
+.assessment-card,
+.summary-card,
+.task-card,
+.mcq-card,
+.auth-card {
+  border-color: var(--border);
+  background: var(--bg-card);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.course-card:hover, .overview-card:hover, .assignment-card:hover {
-  border-color: var(--primary-border-hover);
+.course-card:hover,
+.overview-card:hover,
+.assignment-card:hover,
+.summary-card:hover {
+  border-color: var(--primary);
+}
+
+/* Brand Mark */
+.brand-mark {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+/* Progress Fillers */
+.progress-track span,
+.topic-progress-fill-lg,
+.course-progress-bar-fill {
+  background: var(--primary);
+}
+
+/* Badges & Eyebrows */
+.eyebrow,
+.topic-eyebrow {
+  color: var(--primary);
+}
+
+.badge-primary {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+}
+
+/* Modals & Dialogs */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card,
+.modal-content,
+.dialog-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  color: var(--text-main);
+}
+
+/* Tables & Data */
+.data-table th {
+  background: var(--bg-subtle);
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-main);
+}
+
+.data-table tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+/* Form Controls */
+input, select, textarea {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }

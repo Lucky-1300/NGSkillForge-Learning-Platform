@@ -15,6 +15,16 @@ const userRoutes = require("./routes/user.routes");
 const courseRoutes = require("./routes/course.routes");
 const assignmentRoutes = require("./routes/assignment.routes");
 const enrollmentRoutes = require("./routes/enrollment.routes");
+const lectureRoutes = require("./routes/lecture.routes");
+const aiRoutes = require("./routes/ai.routes");
+const progressRoutes = require("./routes/progress.routes");
+const adminContentRoutes = require("./routes/adminContent.routes");
+const assessmentRoutes = require("./routes/assessment.routes");
+const adminAssessmentRoutes = require("./routes/adminAssessment.routes");
+const certificateRoutes = require("./routes/certificate.routes");
+const dashboardRoutes = require("./routes/dashboard.routes");
+const analyticsRoutes = require("./routes/analytics.routes");
+const searchRoutes = require("./routes/search.routes");
 
 const loggerMiddleware = require(
     "./middleware/logger.middleware"
@@ -79,6 +89,46 @@ app.use("/api/v1/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 
 app.use("/api/enrollments", enrollmentRoutes);
+
+app.use("/api/lectures", lectureRoutes);
+
+app.use("/api/v1/lectures", lectureRoutes);
+
+app.use("/api/ai", aiRoutes);
+
+app.use("/api/v1/ai", aiRoutes);
+
+app.use("/api/progress", progressRoutes);
+
+app.use("/api/v1/progress", progressRoutes);
+
+app.use("/api/admin/content", adminContentRoutes);
+
+app.use("/api/v1/admin/content", adminContentRoutes);
+
+app.use("/api/assessments", assessmentRoutes);
+
+app.use("/api/v1/assessments", assessmentRoutes);
+
+app.use("/api/admin/assessments", adminAssessmentRoutes);
+
+app.use("/api/v1/admin/assessments", adminAssessmentRoutes);
+
+app.use("/api/certificates", certificateRoutes);
+
+app.use("/api/v1/certificates", certificateRoutes);
+
+app.use("/api/student", dashboardRoutes);
+
+app.use("/api/v1/student", dashboardRoutes);
+
+app.use("/api/admin/analytics", analyticsRoutes);
+
+app.use("/api/v1/admin/analytics", analyticsRoutes);
+
+app.use("/api/search", searchRoutes);
+
+app.use("/api/v1/search", searchRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)

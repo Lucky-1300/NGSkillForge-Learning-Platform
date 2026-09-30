@@ -77,10 +77,10 @@ export default function MyEnrollments() {
                         <div className="enrollment-progress">
                           <div>
                             <span>Progress</span>
-                            <strong>0%</strong>
+                            <strong>{item.progress || 0}%</strong>
                           </div>
                           <span className="progress-track">
-                            <span />
+                            <span style={{ width: `${item.progress || 0}%`, height: '100%', display: 'block', background: item.progress === 100 ? '#10b981' : 'var(--primary)', borderRadius: '999px', transition: 'width 0.3s ease' }} />
                           </span>
                         </div>
                         <div className="course-footer">

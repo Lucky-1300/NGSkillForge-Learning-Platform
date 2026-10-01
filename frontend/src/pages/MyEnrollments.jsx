@@ -18,21 +18,7 @@ export default function MyEnrollments() {
   }, [])
 
   return (
-    <>
-      <header className="learning-header">
-        <div className="container learning-header-inner">
-          <div>
-            <span className="eyebrow">Your learning dashboard</span>
-            <h1>Continue learning</h1>
-            <p>Pick up where you left off and keep building useful skills.</p>
-          </div>
-          <div className="learning-header-mark">
-            <FiBookOpen />
-            <span>{items.length} {items.length === 1 ? 'Course' : 'Courses'} in progress</span>
-          </div>
-        </div>
-      </header>
-      <section className="section learning-section">
+    <section className="section learning-section">
         <div className="container">
           <div className="learning-summary">
             <span className="learning-summary-icon">
@@ -116,6 +102,5 @@ export default function MyEnrollments() {
           )}
         </div>
       </section>
-    </>
   )
 }

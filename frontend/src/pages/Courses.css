@@ -3,10 +3,10 @@
    ========================================================================== */
 
 .catalog-hero {
-  background: var(--bg-white);
+  background: var(--bg-secondary);
   color: var(--text-main);
   padding: 24px 0 20px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--border);
   position: relative;
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
@@ -75,9 +75,9 @@
   grid-template-columns: 1fr minmax(180px, 220px);
   gap: 10px;
   padding: 10px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--white);
+  background: var(--bg-secondary);
   box-shadow: var(--shadow-xs);
   margin-bottom: 16px;
 }
@@ -98,28 +98,32 @@
 .course-search .search-box {
   padding-left: 36px;
   height: 38px;
-  background: var(--bg-alt);
-  border: 1px solid var(--line);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  color: var(--dark);
+  color: var(--text-primary);
   font-size: 13px;
   transition: all 0.2s ease;
 }
 
+.course-search .search-box::placeholder {
+  color: var(--muted);
+}
+
 .course-search .search-box:focus {
-  background: var(--white);
+  background: var(--bg-card);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .course-filters select {
   min-width: 0;
   height: 38px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0 12px;
-  color: var(--dark);
-  background: var(--bg-alt);
+  color: var(--text-primary);
+  background: var(--bg-card);
   font-size: 12.5px;
   font-weight: 500;
   outline: none;
@@ -127,10 +131,15 @@
   transition: all 0.2s ease;
 }
 
+.course-filters select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
 .course-filters select:focus {
-  background: var(--white);
+  background: var(--bg-card);
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .filter-clear {
@@ -140,10 +149,10 @@
   gap: 5px;
   padding: 0 12px;
   height: 38px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  color: var(--muted);
-  background: var(--white);
+  color: var(--text-secondary);
+  background: var(--bg-card);
   font-family: var(--font-heading);
   font-size: 12px;
   font-weight: 700;
@@ -154,7 +163,7 @@
 .filter-clear:hover {
   color: var(--primary);
   border-color: var(--primary-border-hover);
-  background: var(--primary-light);
+  background: var(--bg-elevated);
 }
 
 .results-row {
@@ -167,8 +176,8 @@
 }
 
 .results-row p {
-  color: var(--muted);
-  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -182,10 +191,10 @@
   min-width: 30px;
   height: 30px;
   padding: 0 8px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--dark);
+  background: var(--bg-card);
+  color: var(--text-heading);
   font-family: var(--font-heading);
   font-size: 12px;
   font-weight: 600;
@@ -198,14 +207,14 @@
 .pagination.compact button:hover {
   border-color: var(--primary);
   color: var(--primary);
-  background: var(--bg-alt);
+  background: var(--bg-elevated);
 }
 
 .pagination.compact button.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: var(--white);
-  box-shadow: 0 1px 6px rgba(37, 99, 235, 0.25);
+  color: #ffffff;
+  box-shadow: 0 1px 6px var(--primary-glow);
 }
 
 /* Empty & Error States */
@@ -215,9 +224,9 @@
   gap: 12px;
   min-height: 320px;
   padding: 48px 24px;
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--border);
   border-radius: var(--radius-2xl);
-  background: var(--white);
+  background: var(--bg-secondary);
   text-align: center;
 }
 
@@ -229,10 +238,11 @@
 .course-state h2 {
   font-size: 22px;
   font-weight: 800;
+  color: var(--text-heading);
 }
 
 .course-state p {
-  color: var(--muted);
+  color: var(--text-secondary);
   font-size: 14px;
   max-width: 420px;
 }
@@ -246,7 +256,7 @@
 
 .error-state {
   border-color: var(--danger-border);
-  background: var(--white);
+  background: var(--bg-secondary);
 }
 
 .error-state > svg {
@@ -256,16 +266,16 @@
 /* Skeleton Loading Cards */
 .course-skeleton {
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  background: var(--white);
+  background: var(--bg-card);
   box-shadow: var(--shadow-xs);
 }
 
 .skeleton-block {
   position: relative;
   overflow: hidden;
-  background: #f1f5f9;
+  background: var(--bg-secondary);
 }
 
 .skeleton-block::after {
@@ -273,13 +283,13 @@
   inset: 0;
   content: '';
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   animation: skeleton-shimmer 1.4s infinite;
 }
 
 .skeleton-visual {
   height: 135px;
-  background: #eff6ff;
+  background: var(--bg-secondary);
 }
 
 .skeleton-body {
@@ -291,7 +301,7 @@
 .skeleton-line {
   height: 14px;
   border-radius: var(--radius-xs);
-  background: #f1f5f9;
+  background: var(--bg-elevated);
 }
 
 .skeleton-line.short {

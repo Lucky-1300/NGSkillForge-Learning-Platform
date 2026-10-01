@@ -795,6 +795,19 @@ export default function CourseLectures() {
             {/* TAB 1: Notes Content */}
             {activeTab === 'notes' && (
               <div className="learn-tab-pane">
+                <div style={{ marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                  <span style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 600 }}>
+                    Study Notes & Topic Guide
+                  </span>
+                  <Link
+                    to={`/courses/${course._id || courseId}?tab=notes`}
+                    className="btn btn-secondary"
+                    style={{ fontSize: '12px', padding: '6px 14px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <FiBookOpen /> Open Full Course Notes Library (12 Topics) →
+                  </Link>
+                </div>
+
                 {content?.notes ? (
                   <div className="notes-container-layout">
                     <div className="notes-main-column">
@@ -861,10 +874,17 @@ export default function CourseLectures() {
                 ) : (
                   <div className="content-empty-placeholder">
                     <div className="placeholder-icon-wrap">📖</div>
-                    <h3>Notes are not available for this lecture yet.</h3>
+                    <h3>Complete Course Notes Available</h3>
                     <p>
-                      Official notes will be published for this lecture soon. In the meantime, watch the video above to follow the instructor.
+                      Access the full 12-topic comprehensive study guide with code examples and interview questions.
                     </p>
+                    <Link
+                      to={`/courses/${course._id || courseId}?tab=notes`}
+                      className="btn btn-primary"
+                      style={{ marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    >
+                      <FiBookOpen /> Open Course Notes (12 Topics)
+                    </Link>
                   </div>
                 )}
               </div>

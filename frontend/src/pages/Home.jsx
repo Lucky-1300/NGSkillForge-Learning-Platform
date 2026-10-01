@@ -4,6 +4,7 @@ import { FiArrowRight, FiBookOpen, FiCheckCircle, FiCode, FiLayers, FiTrendingUp
 import api, { messageFrom } from '../services/api.js'
 import CourseCard from '../components/CourseCard.jsx'
 import Loader from '../components/Loader.jsx'
+import heroIllustration from '../assets/hero-illustration.jpg'
 
 export default function Home() {
   const [courses, setCourses] = useState([])
@@ -47,41 +48,14 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="learning-preview">
-            <div className="preview-top">
-              <span>MY LEARNING</span>
-              <span className="preview-live">
-                <i /> Active path
-              </span>
-            </div>
-            <div className="preview-course">
-              <span className="preview-icon">
-                <FiLayers />
-              </span>
-              <div>
-                <small>Current course</small>
-                <h3>Full Stack Web Development</h3>
-                <span className="muted">Module 6 of 9</span>
-              </div>
-            </div>
-            <div className="preview-progress">
-              <div>
-                <span>Progress</span>
-                <strong>68%</strong>
-              </div>
-              <div className="progress-track">
-                <span />
-              </div>
-            </div>
-            <div className="preview-next">
-              <span className="preview-next-icon">
-                <FiCheckCircle />
-              </span>
-              <div>
-                <small>Next assignment</small>
-                <strong>Build REST API</strong>
-              </div>
-              <FiArrowRight />
+          <div className="hero-image-container">
+            <div className="hero-image-card">
+              <img
+                src={heroIllustration}
+                alt="NGSkillForge Interactive Developer Workspace & Learning Platform"
+                className="hero-image-asset"
+                loading="eager"
+              />
             </div>
           </div>
         </div>

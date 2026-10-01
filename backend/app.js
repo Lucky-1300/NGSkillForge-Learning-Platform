@@ -25,6 +25,7 @@ const certificateRoutes = require("./routes/certificate.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
 const searchRoutes = require("./routes/search.routes");
+const courseNoteRoutes = require("./routes/courseNote.routes");
 
 const loggerMiddleware = require(
     "./middleware/logger.middleware"
@@ -129,6 +130,10 @@ app.use("/api/v1/admin/analytics", analyticsRoutes);
 app.use("/api/search", searchRoutes);
 
 app.use("/api/v1/search", searchRoutes);
+
+app.use("/api/notes", courseNoteRoutes);
+
+app.use("/api/v1/notes", courseNoteRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI)

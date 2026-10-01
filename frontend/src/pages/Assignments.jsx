@@ -35,22 +35,7 @@ export default function Assignments() {
   const stats = [items.length, items.length, 0, 0]
 
   return (
-    <>
-      <header className="assignment-header">
-        <div className="container assignment-header-inner">
-          <div>
-            <span className="eyebrow">Practice library</span>
-            <h1>Assignments</h1>
-            <p>Turn course ideas into practical work.</p>
-          </div>
-          <div className="assignment-header-mark">
-            <FiBarChart2 />
-            <span>Build your portfolio</span>
-          </div>
-        </div>
-      </header>
-
-      <section className="assignment-section">
+    <section className="assignment-section">
         <div className="container">
           <div className="assignment-stats">
             {statConfig.map(({ label, icon: Icon }, index) => (
@@ -144,6 +129,5 @@ export default function Assignments() {
           )}
         </div>
       </section>
-    </>
   )
 }

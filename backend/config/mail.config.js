@@ -1,170 +1,9 @@
-// This file sets up email sending for OTP and other messages.
-const dns = require("dns");
-const https = require("https");
+// This file handles email delivery using Resend HTTP API (primary for Render) and Nodemailer (local fallback).
+const { Resend } = require("resend");
 const nodemailer = require("nodemailer");
 
-// Use Google DNS servers to resolve hostnames reliably
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-
-if (dns.setDefaultResultOrder) {
-    dns.setDefaultResultOrder("ipv4first");
-}
-
 /**
- * Dynamically resolves smtp.gmail.com to an IPv4 (A record) address.
- */
-async function resolveGmailIPv4() {
-    return new Promise((resolve) => {
-        let finished = false;
-        const timer = setTimeout(() => {
-            if (!finished) {
-                finished = true;
-                console.warn("[Email Service] DNS resolve4 timed out, using fallback address");
-                resolve("142.251.2.108");
-            }
-        }, 3500);
-
-        dns.resolve4("smtp.gmail.com", (err, addresses) => {
-            if (!finished) {
-                finished = true;
-                clearTimeout(timer);
-                if (!err && addresses && addresses.length > 0) {
-                    return resolve(addresses[Math.floor(Math.random() * addresses.length)]);
-                }
-                resolve("142.251.2.108");
-            }
-        });
-    });
-}
-
-/**
- * Send email via Resend HTTPS REST API (Port 443 - 100% cloud firewall compatible).
- */
-function sendViaResend({ to, subject, html, text }) {
-    return new Promise((resolve, reject) => {
-        const fromAddress = process.env.RESEND_FROM || "NGSkillForge <onboarding@resend.dev>";
-        const payload = JSON.stringify({
-            from: fromAddress,
-            to: Array.isArray(to) ? to : [to],
-            subject,
-            html,
-            text,
-        });
-
-        const req = https.request(
-            "https://api.resend.com/emails",
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${process.env.RESEND_API_KEY.trim()}`,
-                    "Content-Type": "application/json",
-                    "Content-Length": Buffer.byteLength(payload),
-                },
-            },
-            (res) => {
-                let data = "";
-                res.on("data", (chunk) => (data += chunk));
-                res.on("end", () => {
-                    try {
-                        const json = JSON.parse(data);
-                        if (res.statusCode >= 200 && res.statusCode < 300) {
-                            resolve({ messageId: json.id });
-                        } else {
-                            reject(new Error(json.message || `Resend API error (${res.statusCode})`));
-                        }
-                    } catch (e) {
-                        reject(new Error(`Failed to parse Resend response: ${data}`));
-                    }
-                });
-            }
-        );
-
-        req.on("error", reject);
-        req.setTimeout(10000, () => {
-            req.destroy();
-            reject(new Error("Resend API request timed out"));
-        });
-        req.write(payload);
-        req.end();
-    });
-}
-
-/**
- * Send email via Brevo HTTPS REST API (Port 443).
- */
-function sendViaBrevo({ to, subject, html, text }) {
-    return new Promise((resolve, reject) => {
-        const senderEmail = process.env.EMAIL_USER || "luckykumari42774@gmail.com";
-        const payload = JSON.stringify({
-            sender: { name: "NGSkillForge", email: senderEmail },
-            to: [{ email: to }],
-            subject,
-            htmlContent: html,
-            textContent: text,
-        });
-
-        const req = https.request(
-            "https://api.brevo.com/v3/smtp/email",
-            {
-                method: "POST",
-                headers: {
-                    "api-key": process.env.BREVO_API_KEY.trim(),
-                    "Content-Type": "application/json",
-                    "Content-Length": Buffer.byteLength(payload),
-                },
-            },
-            (res) => {
-                let data = "";
-                res.on("data", (chunk) => (data += chunk));
-                res.on("end", () => {
-                    try {
-                        const json = JSON.parse(data);
-                        if (res.statusCode >= 200 && res.statusCode < 300) {
-                            resolve({ messageId: json.messageId });
-                        } else {
-                            reject(new Error(json.message || `Brevo API error (${res.statusCode})`));
-                        }
-                    } catch (e) {
-                        reject(new Error(`Failed to parse Brevo response: ${data}`));
-                    }
-                });
-            }
-        );
-
-        req.on("error", reject);
-        req.setTimeout(10000, () => {
-            req.destroy();
-            reject(new Error("Brevo API request timed out"));
-        });
-        req.write(payload);
-        req.end();
-    });
-}
-
-/**
- * Create a Nodemailer transporter instance for a specific IPv4 host and port.
- */
-function createTransporter(targetHost, port, secure) {
-    return nodemailer.createTransport({
-        host: targetHost,
-        port,
-        secure,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-            servername: "smtp.gmail.com",
-            rejectUnauthorized: true,
-        },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
-    });
-}
-
-/**
- * Safe email masker for diagnostic logs (e.g. 'luckykumari42774@gmail.com' -> 'lu***@gmail.com')
+ * Mask an email for secure diagnostic logging (e.g. 'lucky@example.com' -> 'lu***@example.com')
  */
 function maskEmail(email) {
     if (!email || typeof email !== "string") return "unknown";
@@ -177,69 +16,131 @@ function maskEmail(email) {
 }
 
 /**
- * Unified sendMail function supporting Resend (HTTPS 443), Brevo (HTTPS 443), and Nodemailer SMTP fallback.
+ * Lazily initialize and return Resend client instance
+ */
+function getResendClient() {
+    const apiKey = process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.trim() : "";
+    if (!apiKey) return null;
+    return new Resend(apiKey);
+}
+
+/**
+ * Get verified sender email address from environment
+ */
+function getSenderAddress() {
+    return (
+        process.env.RESEND_FROM ||
+        process.env.EMAIL_FROM ||
+        (process.env.EMAIL_USER ? `"NGSkillForge" <${process.env.EMAIL_USER}>` : "NGSkillForge <onboarding@resend.dev>")
+    );
+}
+
+/**
+ * Send email using the official Resend HTTP API SDK (Port 443)
+ */
+async function sendViaResendSdk({ to, subject, html, text }) {
+    const resend = getResendClient();
+    if (!resend) {
+        throw new Error("RESEND_API_KEY is not configured in environment variables.");
+    }
+
+    const from = getSenderAddress();
+    const recipient = Array.isArray(to) ? to : [to];
+
+    const { data, error } = await resend.emails.send({
+        from,
+        to: recipient,
+        subject,
+        html,
+        text,
+    });
+
+    if (error) {
+        const errorMsg = error.message || (typeof error === "object" ? JSON.stringify(error) : String(error));
+        const err = new Error(`Resend API Error: ${errorMsg}`);
+        err.code = "RESEND_ERROR";
+        err.statusCode = error.statusCode || 400;
+        throw err;
+    }
+
+    return {
+        messageId: data?.id || "resend-" + Date.now(),
+        provider: "resend",
+    };
+}
+
+/**
+ * Send email using Nodemailer SMTP (Local development fallback)
+ */
+async function sendViaSmtp({ to, subject, html, text }) {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        throw new Error("SMTP credentials (EMAIL_USER / EMAIL_PASS) are not configured.");
+    }
+
+    const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+    });
+
+    const from = process.env.EMAIL_USER;
+    const info = await transporter.sendMail({
+        from: `"NGSkillForge" <${from}>`,
+        to,
+        subject,
+        html,
+        text,
+    });
+
+    return {
+        messageId: info.messageId,
+        provider: "smtp",
+    };
+}
+
+/**
+ * Unified email sending function
  *
- * @param {Object} mailOptions - { from, to, subject, text, html }
- * @returns {Promise<Object>} - Delivery result info with messageId
+ * @param {Object} mailOptions - { to, subject, html, text }
+ * @returns {Promise<Object>} - { messageId, provider }
  */
 async function sendMail(mailOptions) {
-    const recipient = maskEmail(mailOptions.to);
+    const masked = maskEmail(mailOptions.to);
 
-    // 1. Resend HTTPS REST API (Port 443 - Recommended for Render)
+    // 1. Primary: Resend HTTP API (Port 443 — Bypasses Render blocked SMTP ports)
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim() !== "") {
-        console.log(`[Email Service] Attempting delivery to ${recipient} via Resend HTTPS API (Port 443)...`);
+        console.log(`[Email Service] Sending email to ${masked} via Resend HTTP API (Port 443)...`);
         try {
-            const info = await sendViaResend(mailOptions);
-            console.log(`[Email Service] Delivered successfully via Resend to ${recipient} (Message ID: ${info.messageId})`);
-            return info;
-        } catch (resendError) {
-            console.error(`[Email Service] Resend API failed: ${resendError.message}`);
-            throw resendError;
+            const result = await sendViaResendSdk(mailOptions);
+            console.log(`[Email Service] Delivered successfully via Resend to ${masked} (ID: ${result.messageId})`);
+            return result;
+        } catch (resendErr) {
+            console.error(`[Email Service] Resend delivery failed for ${masked}:`, resendErr.message);
+            throw resendErr;
         }
     }
 
-    // 2. Brevo HTTPS REST API (Port 443)
-    if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim() !== "") {
-        console.log(`[Email Service] Attempting delivery to ${recipient} via Brevo HTTPS API (Port 443)...`);
-        try {
-            const info = await sendViaBrevo(mailOptions);
-            console.log(`[Email Service] Delivered successfully via Brevo to ${recipient} (Message ID: ${info.messageId})`);
-            return info;
-        } catch (brevoError) {
-            console.error(`[Email Service] Brevo API failed: ${brevoError.message}`);
-            throw brevoError;
-        }
-    }
-
-    // 3. SMTP Transport (Direct IPv4 on Port 465 SSL -> Port 587 STARTTLS)
-    const targetIPv4 = await resolveGmailIPv4();
-    console.log(`[Email Service] Resolved Gmail SMTP to IPv4: ${targetIPv4}`);
-
+    // 2. Fallback: SMTP (Local Development)
+    console.log(`[Email Service] RESEND_API_KEY not found. Attempting Nodemailer SMTP for ${masked}...`);
     try {
-        console.log(`[Email Service] Attempting delivery to ${recipient} via SMTP Port 465 (SSL / IPv4)...`);
-        const primaryTransporter = createTransporter(targetIPv4, 465, true);
-        const info = await primaryTransporter.sendMail(mailOptions);
-        console.log(`[Email Service] Delivered successfully to ${recipient} (Message ID: ${info.messageId})`);
-        return info;
-    } catch (primaryError) {
-        console.warn(`[Email Service] Port 465 delivery failed (${primaryError.code || primaryError.message}). Retrying via Port 587 (STARTTLS / IPv4)...`);
-
-        try {
-            const fallbackTransporter = createTransporter(targetIPv4, 587, false);
-            const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
-            console.log(`[Email Service] Delivered successfully via fallback to ${recipient} (Message ID: ${fallbackInfo.messageId})`);
-            return fallbackInfo;
-        } catch (fallbackError) {
-            console.error(`[Email Service] All SMTP attempts failed for ${recipient}. Primary: ${primaryError.message} | Fallback: ${fallbackError.message}`);
-            throw fallbackError;
-        }
+        const result = await sendViaSmtp(mailOptions);
+        console.log(`[Email Service] Delivered successfully via SMTP to ${masked} (Message ID: ${result.messageId})`);
+        return result;
+    } catch (smtpErr) {
+        console.error(`[Email Service] SMTP delivery failed for ${masked}:`, smtpErr.code || smtpErr.message);
+        throw smtpErr;
     }
 }
 
 module.exports = {
     sendMail,
-    resolveGmailIPv4,
-    createTransporter,
-    sendViaResend,
-    sendViaBrevo,
+    sendViaResendSdk,
+    sendViaSmtp,
+    getSenderAddress,
+    maskEmail,
 };

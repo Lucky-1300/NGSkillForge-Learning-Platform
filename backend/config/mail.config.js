@@ -2,20 +2,32 @@
 const dns = require("dns");
 const nodemailer = require("nodemailer");
 
-// Ensure Node.js prioritizes IPv4 resolution across all network operations
+// Use Google DNS servers to resolve hostnames reliably
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 if (dns.setDefaultResultOrder) {
     dns.setDefaultResultOrder("ipv4first");
 }
 
 /**
- * Custom DNS lookup enforcing IPv4 to prevent ENETUNREACH errors on cloud container hosts
+ * Robust IPv4 DNS resolver function for Nodemailer and net.connect.
+ * Uses dns.resolve4 (A records only) to completely prevent IPv6 (ENETUNREACH) on Render containers.
+ * Handles both (hostname, callback) and (hostname, options, callback) argument signatures.
  */
 const ipv4Lookup = (hostname, options, callback) => {
-    return dns.lookup(hostname, Object.assign({}, options, { family: 4, all: false }), callback);
+    const cb = typeof options === "function" ? options : callback;
+
+    dns.resolve4(hostname, (err, addresses) => {
+        if (!err && addresses && addresses.length > 0) {
+            return cb(null, addresses[0], 4);
+        }
+        // Fallback: system lookup forcing IPv4 family
+        dns.lookup(hostname, { family: 4, all: false }, cb);
+    });
 };
 
 /**
- * Primary SMTP transport: Gmail direct SSL on Port 465 (IPv4 enforced)
+ * Primary SMTP transport: Gmail direct SSL on Port 465 (IPv4 enforced via dns.resolve4)
  */
 const primaryTransporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -25,9 +37,12 @@ const primaryTransporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
-    family: 4,
     lookup: ipv4Lookup,
-    connectionTimeout: 10000, // 10s timeout
+    tls: {
+        servername: "smtp.gmail.com",
+        rejectUnauthorized: true,
+    },
+    connectionTimeout: 10000, // 10s connection timeout
     greetingTimeout: 10000,   // 10s greeting timeout
     socketTimeout: 15000,     // 15s socket timeout
 });
@@ -43,8 +58,11 @@ const fallbackTransporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
-    family: 4,
     lookup: ipv4Lookup,
+    tls: {
+        servername: "smtp.gmail.com",
+        rejectUnauthorized: true,
+    },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
@@ -79,13 +97,13 @@ async function sendMail(mailOptions) {
         return info;
     } catch (primaryError) {
         console.warn(`[Email Service] Port 465 delivery failed (${primaryError.code || primaryError.message}). Retrying via Port 587 (STARTTLS / IPv4)...`);
-        
+
         try {
             const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
             console.log(`[Email Service] Delivered successfully via fallback to ${recipient} (Message ID: ${fallbackInfo.messageId})`);
             return fallbackInfo;
         } catch (fallbackError) {
-            console.error(`[Email Service] All SMTP attempts failed for ${recipient}. Primary error: ${primaryError.message} | Fallback error: ${fallbackError.message}`);
+            console.error(`[Email Service] All SMTP attempts failed for ${recipient}. Primary: ${primaryError.message} | Fallback: ${fallbackError.message}`);
             throw fallbackError;
         }
     }

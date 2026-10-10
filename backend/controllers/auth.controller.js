@@ -28,8 +28,13 @@ const publicUser = (user) => {
 
 const sendOtp = async (req, res) => {
     const normalizedEmail = normalizeEmail(req.body.email);
+    const maskedEmail = normalizedEmail
+        ? `${normalizedEmail.slice(0, 2)}***@${normalizedEmail.split("@")[1] || ""}`
+        : "unknown";
 
     try {
+        console.log(`[Auth OTP] Step 1: Request received for ${maskedEmail}`);
+
         if (!normalizedEmail) {
             return res.status(400).json({
                 success: false,
@@ -39,6 +44,7 @@ const sendOtp = async (req, res) => {
 
         const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
+            console.log(`[Auth OTP] Step 1b: User already exists for ${maskedEmail}`);
             return res.status(400).json({
                 success: false,
                 message: "An account with this email already exists. Please log in.",
@@ -46,6 +52,7 @@ const sendOtp = async (req, res) => {
         }
 
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error("[Auth OTP] EMAIL_USER or EMAIL_PASS is missing in environment variables.");
             return res.status(500).json({
                 success: false,
                 message: "Email service is not configured on the server. Please ensure EMAIL_USER and EMAIL_PASS are set in Render Environment variables.",
@@ -71,6 +78,8 @@ const sendOtp = async (req, res) => {
             expiresAt,
         });
 
+        console.log(`[Auth OTP] Step 2: OTP record saved in MongoDB for ${maskedEmail}. Sending email...`);
+
         await sendMail({
             from: `"NGSkillForge" <${process.env.EMAIL_USER}>`,
             to: normalizedEmail,
@@ -84,6 +93,8 @@ const sendOtp = async (req, res) => {
             </div>`,
         });
 
+        console.log(`[Auth OTP] Step 3: Email delivered successfully for ${maskedEmail}. Returning HTTP 200.`);
+
         return res.status(200).json({
             success: true,
             message: "OTP sent successfully",
@@ -94,7 +105,7 @@ const sendOtp = async (req, res) => {
             await Otp.deleteMany({ email: normalizedEmail }).catch(() => {});
         }
 
-        console.error("sendOtp error:", error.code || error.message);
+        console.error(`[Auth OTP] Step 3 (Failed): Error for ${maskedEmail}:`, error.code || error.message);
 
         let errorMessage = "Failed to send OTP email. Please try again.";
         if (error.code === "EAUTH") {

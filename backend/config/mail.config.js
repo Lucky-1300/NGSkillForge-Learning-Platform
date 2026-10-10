@@ -16,13 +16,24 @@ if (dns.setDefaultResultOrder) {
  */
 async function resolveGmailIPv4() {
     return new Promise((resolve) => {
-        dns.resolve4("smtp.gmail.com", (err, addresses) => {
-            if (!err && addresses && addresses.length > 0) {
-                // Return a random IPv4 address from the resolved A records list
-                return resolve(addresses[Math.floor(Math.random() * addresses.length)]);
+        let finished = false;
+        const timer = setTimeout(() => {
+            if (!finished) {
+                finished = true;
+                console.warn("[Email Service] DNS resolve4 timed out, using fallback address");
+                resolve("142.251.2.108"); // Google SMTP direct IPv4 fallback
             }
-            // Fallback: return default hostname if resolve4 encounters an issue
-            resolve("smtp.gmail.com");
+        }, 3500);
+
+        dns.resolve4("smtp.gmail.com", (err, addresses) => {
+            if (!finished) {
+                finished = true;
+                clearTimeout(timer);
+                if (!err && addresses && addresses.length > 0) {
+                    return resolve(addresses[Math.floor(Math.random() * addresses.length)]);
+                }
+                resolve("142.251.2.108");
+            }
         });
     });
 }

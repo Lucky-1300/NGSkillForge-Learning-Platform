@@ -39,17 +39,27 @@ const sendOtp = async (req, res) => {
             });
         }
 
+        const existingUser = await User.findOne({ email: normalizedEmail });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: "An account with this email already exists. Please log in.",
+            });
+        }
+
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            return res.status(500).json({
+                success: false,
+                message: "Email service is not configured on the server. Please ensure EMAIL_USER and EMAIL_PASS are set in Render Environment variables.",
+            });
+        }
+
         // Generate a 6-digit OTP without letters or symbols.
-
-
-
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             lowerCaseAlphabets: false,
             specialChars: false,
         });
-
-
 
         const expiresAt = new Date(
             Date.now() + 5 * 60 * 1000
@@ -57,26 +67,24 @@ const sendOtp = async (req, res) => {
 
         await Otp.deleteMany({ email: normalizedEmail });
 
-
         await Otp.create({
             email: normalizedEmail,
             otp,
             expiresAt,
         });
 
-
-
         await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-
+            from: `"NGSkillForge" <${process.env.EMAIL_USER}>`,
             to: normalizedEmail,
-
-            subject: "OTP Verification",
-
-            text: `Your OTP is ${otp}`,
+            subject: "NGSkillForge — OTP Verification Code",
+            text: `Your OTP verification code for NGSkillForge is: ${otp}\n\nThis code will expire in 5 minutes.`,
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; color: #1e293b;">
+                <h2 style="color: #3b82f6;">NGSkillForge Account Verification</h2>
+                <p>Use the following 6-digit code to complete your registration:</p>
+                <div style="font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #0284c7; padding: 12px 0;">${otp}</div>
+                <p style="color: #64748b; font-size: 13px;">This code expires in 5 minutes. If you did not request this code, please ignore this email.</p>
+            </div>`,
         });
-
-
 
         return res.status(200).json({
             success: true,
@@ -85,10 +93,13 @@ const sendOtp = async (req, res) => {
 
     } catch (error) {
 
+        console.error("Nodemailer sendMail error:", error);
+
         return res.status(500).json({
             success: false,
-            message: "Failed to send OTP",
-            error: error.message,
+            message: error.code === "EAUTH" 
+                ? "Email authentication failed. Please check EMAIL_USER and EMAIL_PASS (Gmail App Password)." 
+                : error.message || "Failed to send OTP",
         });
 
     }

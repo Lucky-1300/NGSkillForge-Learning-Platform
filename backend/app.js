@@ -41,15 +41,19 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = (process.env.FRONTEND_URLS || "http://localhost:5173")
     .split(",")
-    .map((origin) => origin.trim())
+    .map((origin) => origin.trim().replace(/\/+$/, ""))
     .filter(Boolean);
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) {
             return callback(null, true);
         }
-        return callback(new Error("Origin is not allowed by CORS"));
+        const normalizedOrigin = origin.trim().replace(/\/+$/, "");
+        if (allowedOrigins.includes(normalizedOrigin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`Origin ${origin} is not allowed by CORS`));
     },
     credentials: true,
 }));

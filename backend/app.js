@@ -6,6 +6,7 @@ const dns = require("dns");
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const express = require("express");
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
@@ -36,6 +37,7 @@ const errorMiddleware = require(
 );
 
 const app = express();
+app.set("trust proxy", 1);
 
 const allowedOrigins = (process.env.FRONTEND_URLS || "http://localhost:5173")
     .split(",")

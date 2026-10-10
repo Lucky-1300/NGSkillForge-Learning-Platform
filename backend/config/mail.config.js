@@ -10,63 +10,44 @@ if (dns.setDefaultResultOrder) {
 }
 
 /**
- * Robust IPv4 DNS resolver function for Nodemailer and net.connect.
- * Uses dns.resolve4 (A records only) to completely prevent IPv6 (ENETUNREACH) on Render containers.
- * Handles both (hostname, callback) and (hostname, options, callback) argument signatures.
+ * Dynamically resolves smtp.gmail.com to an IPv4 (A record) address.
+ * Passing a raw IPv4 string to Nodemailer completely bypasses Nodemailer's
+ * internal resolve6() and random-address selector, preventing Render ENETUNREACH.
  */
-const ipv4Lookup = (hostname, options, callback) => {
-    const cb = typeof options === "function" ? options : callback;
-
-    dns.resolve4(hostname, (err, addresses) => {
-        if (!err && addresses && addresses.length > 0) {
-            return cb(null, addresses[0], 4);
-        }
-        // Fallback: system lookup forcing IPv4 family
-        dns.lookup(hostname, { family: 4, all: false }, cb);
+async function resolveGmailIPv4() {
+    return new Promise((resolve) => {
+        dns.resolve4("smtp.gmail.com", (err, addresses) => {
+            if (!err && addresses && addresses.length > 0) {
+                // Return a random IPv4 address from the resolved A records list
+                return resolve(addresses[Math.floor(Math.random() * addresses.length)]);
+            }
+            // Fallback: return default hostname if resolve4 encounters an issue
+            resolve("smtp.gmail.com");
+        });
     });
-};
+}
 
 /**
- * Primary SMTP transport: Gmail direct SSL on Port 465 (IPv4 enforced via dns.resolve4)
+ * Create a Nodemailer transporter instance for a specific IPv4 host and port.
  */
-const primaryTransporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // SSL
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    lookup: ipv4Lookup,
-    tls: {
-        servername: "smtp.gmail.com",
-        rejectUnauthorized: true,
-    },
-    connectionTimeout: 10000, // 10s connection timeout
-    greetingTimeout: 10000,   // 10s greeting timeout
-    socketTimeout: 15000,     // 15s socket timeout
-});
-
-/**
- * Secondary SMTP transport: Gmail STARTTLS on Port 587 (IPv4 enforced fallback)
- */
-const fallbackTransporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // STARTTLS
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-    lookup: ipv4Lookup,
-    tls: {
-        servername: "smtp.gmail.com",
-        rejectUnauthorized: true,
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-});
+function createTransporter(targetHost, port, secure) {
+    return nodemailer.createTransport({
+        host: targetHost,
+        port,
+        secure,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+        tls: {
+            servername: "smtp.gmail.com",
+            rejectUnauthorized: true,
+        },
+        connectionTimeout: 10000, // 10s connection timeout
+        greetingTimeout: 10000,   // 10s greeting timeout
+        socketTimeout: 15000,     // 15s socket timeout
+    });
+}
 
 /**
  * Safe email masker for diagnostic logs (e.g. 'luckykumari42774@gmail.com' -> 'lu***@gmail.com')
@@ -82,23 +63,30 @@ function maskEmail(email) {
 }
 
 /**
- * Send email with automatic IPv4 enforcement and port 465 -> 587 failover
+ * Send email with guaranteed IPv4 host resolution and port 465 (SSL) -> 587 (STARTTLS) failover.
  *
  * @param {Object} mailOptions - Nodemailer mail options ({ from, to, subject, text, html })
  * @returns {Promise<Object>} - Nodemailer send result info
  */
 async function sendMail(mailOptions) {
     const recipient = maskEmail(mailOptions.to);
+    const targetIPv4 = await resolveGmailIPv4();
 
+    console.log(`[Email Service] Resolved Gmail SMTP to IPv4: ${targetIPv4}`);
+
+    // 1. Attempt delivery via Port 465 (Direct SSL)
     try {
         console.log(`[Email Service] Attempting delivery to ${recipient} via Port 465 (SSL / IPv4)...`);
+        const primaryTransporter = createTransporter(targetIPv4, 465, true);
         const info = await primaryTransporter.sendMail(mailOptions);
         console.log(`[Email Service] Delivered successfully to ${recipient} (Message ID: ${info.messageId})`);
         return info;
     } catch (primaryError) {
         console.warn(`[Email Service] Port 465 delivery failed (${primaryError.code || primaryError.message}). Retrying via Port 587 (STARTTLS / IPv4)...`);
 
+        // 2. Fallback attempt via Port 587 (STARTTLS)
         try {
+            const fallbackTransporter = createTransporter(targetIPv4, 587, false);
             const fallbackInfo = await fallbackTransporter.sendMail(mailOptions);
             console.log(`[Email Service] Delivered successfully via fallback to ${recipient} (Message ID: ${fallbackInfo.messageId})`);
             return fallbackInfo;
@@ -111,6 +99,6 @@ async function sendMail(mailOptions) {
 
 module.exports = {
     sendMail,
-    primaryTransporter,
-    fallbackTransporter,
+    resolveGmailIPv4,
+    createTransporter,
 };

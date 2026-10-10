@@ -51,11 +51,17 @@ const sendOtp = async (req, res) => {
             });
         }
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error("[Auth OTP] EMAIL_USER or EMAIL_PASS is missing in environment variables.");
+        const hasEmailService = Boolean(
+            (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY.trim()) ||
+            (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.trim()) ||
+            (process.env.EMAIL_USER && process.env.EMAIL_PASS)
+        );
+
+        if (!hasEmailService) {
+            console.error("[Auth OTP] No email provider configured (RESEND_API_KEY, BREVO_API_KEY, or EMAIL_USER/EMAIL_PASS).");
             return res.status(500).json({
                 success: false,
-                message: "Email service is not configured on the server. Please ensure EMAIL_USER and EMAIL_PASS are set in Render Environment variables.",
+                message: "Email service is not configured on the server. Please set RESEND_API_KEY (recommended) or EMAIL_USER/EMAIL_PASS in Render Environment variables.",
             });
         }
 

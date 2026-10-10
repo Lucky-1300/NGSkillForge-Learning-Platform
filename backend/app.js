@@ -2,6 +2,10 @@
 require("dotenv").config();
 const dns = require("dns");
 
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder("ipv4first");
+}
+
 // Use Google DNS servers to resolve MongoDB Atlas SRV records reliably
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 

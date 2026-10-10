@@ -9,6 +9,7 @@ export default function VerifyOTP() {
   const location = useLocation()
   const navigate = useNavigate()
   const { register, loading } = useAuth()
+  const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({
     email: '',
     otp: '',
@@ -22,6 +23,7 @@ export default function VerifyOTP() {
 
   const submit = async (event) => {
     event.preventDefault()
+    setSubmitting(true)
     try {
       const verified = await api.post('/auth/verify-otp', {
         email: form.email,
@@ -37,8 +39,12 @@ export default function VerifyOTP() {
       navigate('/')
     } catch (error) {
       toast.error(messageFrom(error))
+    } finally {
+      setSubmitting(false)
     }
   }
+
+  const isBusy = loading || submitting
 
   return (
     <AuthLayout
@@ -91,8 +97,8 @@ export default function VerifyOTP() {
             placeholder="At least 6 characters"
           />
         </div>
-        <button className="btn btn-primary" disabled={loading}>
-          {loading ? 'Creating account...' : 'Verify and create account'}
+        <button className="btn btn-primary" disabled={isBusy}>
+          {isBusy ? 'Creating account...' : 'Verify and create account'}
         </button>
         <p className="muted" style={{ textAlign: 'center', fontSize: '13.5px' }}>
           <Link className="auth-link" to="/register">

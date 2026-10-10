@@ -7,7 +7,7 @@ const otpGenerator = require("otp-generator");
 
 const Otp = require("../models/otp.model");
 
-const transporter = require("../config/mail.config");
+const { sendMail } = require("../config/mail.config");
 
 const PRIMARY_ADMIN_EMAIL = (
     process.env.PRIMARY_ADMIN_EMAIL || "luckykumari42774@gmail.com"
@@ -27,11 +27,9 @@ const publicUser = (user) => {
 
 
 const sendOtp = async (req, res) => {
+    const normalizedEmail = normalizeEmail(req.body.email);
 
     try {
-
-        const normalizedEmail = normalizeEmail(req.body.email);
-
         if (!normalizedEmail) {
             return res.status(400).json({
                 success: false,
@@ -73,7 +71,7 @@ const sendOtp = async (req, res) => {
             expiresAt,
         });
 
-        await transporter.sendMail({
+        await sendMail({
             from: `"NGSkillForge" <${process.env.EMAIL_USER}>`,
             to: normalizedEmail,
             subject: "NGSkillForge — OTP Verification Code",
@@ -92,16 +90,25 @@ const sendOtp = async (req, res) => {
         });
 
     } catch (error) {
+        if (normalizedEmail) {
+            await Otp.deleteMany({ email: normalizedEmail }).catch(() => {});
+        }
 
-        console.error("Nodemailer sendMail error:", error);
+        console.error("sendOtp error:", error.code || error.message);
+
+        let errorMessage = "Failed to send OTP email. Please try again.";
+        if (error.code === "EAUTH") {
+            errorMessage = "Email authentication failed. Please check EMAIL_USER and EMAIL_PASS (Gmail App Password).";
+        } else if (error.code === "ENETUNREACH" || error.code === "ETIMEDOUT" || error.code === "ECONNREFUSED") {
+            errorMessage = "Email server connection timed out or unreachable. Please try again shortly.";
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
 
         return res.status(500).json({
             success: false,
-            message: error.code === "EAUTH" 
-                ? "Email authentication failed. Please check EMAIL_USER and EMAIL_PASS (Gmail App Password)." 
-                : error.message || "Failed to send OTP",
+            message: errorMessage,
         });
-
     }
 
 };
